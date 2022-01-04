@@ -5,7 +5,10 @@ import auth from './services/auth';
 import issuer from './services/issuer';
 import { jwtFilter } from './utils/jwt';
 import errorHandler from './errors/handler';
+import createTables from './scripts/db/createTables';
 
+
+createTables();
 
 dotenv.config();
 
