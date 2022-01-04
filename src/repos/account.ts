@@ -1,63 +1,49 @@
-import db from '../utils/db';
-import * as issuer from './issuer';
+import Repository from './base';
+import { SQL } from '../utils/db';
+import { Account } from '../models/account';
 
 
-const getNonce = async (publicAddress: string) => {
-    const instance = await db.connect();
-    const sql = `SELECT Nonce nonce FROM Accounts WHERE PublicAddress = ?`;
-    const row = await instance.get(sql, [publicAddress]);
-    return row?.nonce;
-};
+class AccountRepository extends Repository {
+    private findByPublicAddressSQL: string;
+    private findByNonceSQL: string;
+    private saveWithPublicAddressAndNonceSQL: string;
 
-const hasAccountExisted = async (publicAddress: string) => {
-    const instance = await db.connect();
-    const sql = `SELECT COUNT(*) <> 0 existed FROM Accounts WHERE PublicAddress = ?`;
-    return (await instance.get(sql, [publicAddress]))?.existed == 1;
-};
-
-const updateNonce = async (publicAddress: string, nonce: string) => {
-    const instance = await db.connect();
-    const sql = `UPDATE Accounts SET Nonce = ? WHERE PublicAddress = ?`;
-    await instance.run(sql, [nonce, publicAddress]);
-};
-
-const insertNonce = async (publicAddress: string, nonce: string) => {
-    const instance = await db.connect();
-    const sql = `INSERT INTO Accounts (PublicAddress, Nonce)`
-        + ` VALUES (?, ?) `;
-    await instance.run(sql, [publicAddress, nonce]);
-};
-
-const saveNonce = async (publicAddress: string, nonce: string) => {
-    if (await hasAccountExisted(publicAddress)) {
-        await updateNonce(publicAddress, nonce);
+    constructor() {
+        super();
+        this.findByPublicAddressSQL = SQL.from('select-from/accounts/by-public-address.sql').build();
+        this.findByNonceSQL = SQL.from('select-from/accounts/by-nonce.sql').build();
+        this.saveWithPublicAddressAndNonceSQL
+            = SQL.from('insert-into/accounts/with-public-address-with-nonce.sql').build();
     }
-    else {
-        await insertNonce(publicAddress, nonce);
-        await issuer.insertIssuer({
-            id: publicAddress,
-            name: null,
-            email: null,
-            school: null,
-            groups: []
-        });
+
+    async findByPublicAddress(publicAddress: string) {
+        const result = await this.db?.get(this.findByPublicAddressSQL, [publicAddress]);
+        if (result) {
+            return {
+                publicAddress: result['public_address'],
+                nonce: result['nonce'],
+                deleted: result['deleted']
+            };
+        }
     }
-};
 
-const hasAccountWithNonceExisted = async (publicAddress: string, nonce: string) => {
-    const instance = await db.connect();
-    const sql = `SELECT COUNT(*) <> 0 existed`
-        + ` FROM Accounts `
-        + ` WHERE PublicAddress = ? `
-        + ` AND Nonce = ? `;
-    return (await instance.get(sql, [publicAddress, nonce]))?.existed == 1;
-};
+    async findByNonce(nonce: string) {
+        const result = await this.db?.get(this.findByNonceSQL, [nonce]);
+        if (result) {
+            return {
+                publicAddress: result['public_address'],
+                nonce: result['nonce'],
+                deleted: result['deleted']
+            };
+        }
+    }
 
-export {
-    getNonce,
-    saveNonce,
-    insertNonce,
-    updateNonce,
-    hasAccountExisted,
-    hasAccountWithNonceExisted
-};
+    async save(account: Account) {
+        await this.db?.run(this.saveWithPublicAddressAndNonceSQL, [
+            account.publicAddress,
+            account.nonce
+        ]);
+    }
+}
+
+export default new AccountRepository();

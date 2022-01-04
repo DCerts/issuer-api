@@ -2,6 +2,9 @@ import { bufferToHex } from 'ethereumjs-util';
 import { recoverPersonalSignature } from 'eth-sig-util';
 
 
+/**
+ * Validates the signature of a given message.
+ */
 const isSignatureValid = (
     message: string,
     publicAddress: string,

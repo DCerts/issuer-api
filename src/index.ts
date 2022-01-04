@@ -1,16 +1,23 @@
 import express, { Express } from "express";
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { createTables, connect } from './utils/db';
 import auth from './services/auth';
 import issuer from './services/issuer';
 import { jwtFilter } from './utils/jwt';
 import errorHandler from './errors/handler';
-import createTables from './scripts/db/createTables';
 
-
-createTables();
 
 dotenv.config();
+
+// Connect to the database then create tables if not exists.
+const setup = async () => {
+    await connect();
+    createTables('accounts', 'issuers', 'students', 'subjects', 'certs', 'cert-issuers');
+};
+
+setup();
+
 
 const app: Express = express();
 

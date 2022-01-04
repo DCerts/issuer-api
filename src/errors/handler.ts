@@ -3,6 +3,9 @@ import { ErrorCode } from './code';
 import { Error } from './http';
 
 
+/**
+ * Handle errors for HTTP requests.
+ */
 const httpHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
     if (err.status) {

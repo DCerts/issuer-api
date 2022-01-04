@@ -1,21 +1,17 @@
 import { Router } from 'express';
 import { getAccountFromRequest } from '../utils/jwt';
-import * as repository from '../repos/issuer';
-import { NotFoundError } from '../errors/http';
-import { ErrorCode } from '../errors/code';
+import IssuerRepository from '../repos/issuer';
 
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    const id = getAccountFromRequest(req).publicAddress;
-    if (await repository.hasIssuerExisted(id)) {
-        const issuer = await repository.getIssuer(id);
-        res.json(issuer);
+    const publicAddress = getAccountFromRequest(req).publicAddress;
+    const issuer = await IssuerRepository.findByPublicAddress(publicAddress);
+    if (!issuer) {
+        res.status(404).json('Hello World!');
     }
-    else {
-        throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
-    }
+    res.json(issuer);
 });
 
 export default router;
