@@ -7,7 +7,7 @@ import { ErrorCode } from '../errors/code';
 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'Vietnam';
-const JWT_VALIDITY = 60 * 60;
+const JWT_VALIDITY = 60;
 
 const generateToken = (account: Account): string => {
     return jwt.sign(account, JWT_SECRET, {
