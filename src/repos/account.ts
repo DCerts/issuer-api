@@ -50,8 +50,8 @@ class AccountRepository extends Repository {
 
     async save(account: Account) {
         await this.db?.run(this.saveWithPublicAddressAndNonceSQL, [
-            account.publicAddress,
-            account.nonce
+            account.nonce,
+            account.publicAddress
         ]);
     }
 }
