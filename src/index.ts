@@ -2,8 +2,8 @@ import express, { Express } from "express";
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createTables, connect } from './utils/db';
-import auth from './services/auth';
-import issuer from './services/issuer';
+import auth from './controllers/auth';
+import issuer from './controllers/issuer';
 import { jwtFilter } from './utils/jwt';
 import errorHandler from './errors/handler';
 

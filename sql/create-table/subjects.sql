@@ -1,5 +1,5 @@
 create table if not exists subjects (
-    id auto_increment primary key,
+    id integer auto_increment,
     subject_id text,
     subject_name text,
     description text,

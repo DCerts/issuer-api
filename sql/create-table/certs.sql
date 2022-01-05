@@ -1,5 +1,5 @@
 create table if not exists certs (
-    id int auto_increment primary key,
+    id integer auto_increment,
     student_id text,
     subject_id text,
     semester text,

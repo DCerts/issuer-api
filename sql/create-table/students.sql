@@ -1,5 +1,5 @@
 create table if not exists students (
-    id int auto_increment primary key,
+    id integer auto_increment,
     student_id text,
     full_name text,
     email text,

@@ -1,5 +1,5 @@
 create table if not exists accounts (
-    id int auto_increment primary key,
+    id integer auto_increment,
     public_address text,
     nonce text,
     created_at timestamp default current_timestamp,

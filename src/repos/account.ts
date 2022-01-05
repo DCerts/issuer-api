@@ -6,14 +6,17 @@ import { Account } from '../models/account';
 class AccountRepository extends Repository {
     private findByPublicAddressSQL: string;
     private findByNonceSQL: string;
+    private createWithPublicAddressAndNonceSQL: string;
     private saveWithPublicAddressAndNonceSQL: string;
 
     constructor() {
         super();
         this.findByPublicAddressSQL = SQL.from('select-from/accounts/by-public-address.sql').build();
         this.findByNonceSQL = SQL.from('select-from/accounts/by-nonce.sql').build();
-        this.saveWithPublicAddressAndNonceSQL
+        this.createWithPublicAddressAndNonceSQL
             = SQL.from('insert-into/accounts/with-public-address-with-nonce.sql').build();
+        this.saveWithPublicAddressAndNonceSQL
+            = SQL.from('update/accounts/by-public-address-with-nonce.sql').build();
     }
 
     async findByPublicAddress(publicAddress: string) {
@@ -36,6 +39,13 @@ class AccountRepository extends Repository {
                 deleted: result['deleted']
             };
         }
+    }
+
+    async create(account: Account) {
+        await this.db?.run(
+            this.createWithPublicAddressAndNonceSQL,
+            [account.publicAddress, account.nonce]
+        );
     }
 
     async save(account: Account) {

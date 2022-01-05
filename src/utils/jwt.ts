@@ -47,7 +47,7 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
             ? true
             : accountPayload.exp * 1000 < +new Date();
         if (expired) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_EXPIRED);
-        const existed = (await AccountRepository.findByNonce(nonce))?.publicAddress === publicAddress;
+        const existed = (await AccountRepository.findByPublicAddress(publicAddress))?.nonce === nonce;
         if (!existed) throw new UnauthorizedError(req.originalUrl, ErrorCode.NONCE_NOT_MATCHED);
         next();
     } catch (err) {

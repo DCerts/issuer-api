@@ -1,5 +1,5 @@
 create table if not exists issuers (
-    id int auto_increment primary key,
+    id integer auto_increment,
     public_address text,
     full_name text,
     email text,

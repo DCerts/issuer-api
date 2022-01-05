@@ -1,38 +1,48 @@
-import { Router } from 'express';
+import { UnauthorizedError } from '../errors/http';
+import AccountRepository from '../repos/account';
+import IssuerRepository from '../repos/issuer';
 import { isSignatureValid } from '../utils/eth';
 import * as jwt from '../utils/jwt';
-import { UnauthorizedError } from '../errors/http';
-import { ErrorCode } from '../errors/code';
-import AccountRepository from '../repos/account';
 
 
-const router = Router();
+const NONCE_MAX_LENGTH = 16;
 
-router.get('/:publicAddress/nonce', async (req, res) => {
-    const publicAddress = req.params.publicAddress;
-    const nonce = jwt.randomizeText(16);
-    await AccountRepository.save({
-        publicAddress: publicAddress,
-        nonce: nonce
-    });
-    res.json(nonce);
-});
-
-router.post('/:publicAddress', async (req, res, next) => {
-    const publicAddress = req.params.publicAddress;
-    const signature = req.body.signature;
-    const nonce = (await AccountRepository.findByPublicAddress(publicAddress))?.nonce;
-    try {
-        if (!isSignatureValid(nonce, publicAddress, signature)) {
-            throw new UnauthorizedError(req.path, ErrorCode.SIGNATURE_INVALID);
-        }
-        res.json(jwt.generateToken({
+const getNonce = async (publicAddress: string) => {
+    const nonce = jwt.randomizeText(NONCE_MAX_LENGTH);
+    const account = await AccountRepository.findByPublicAddress(publicAddress);
+    if (account) {
+        await AccountRepository.save({
             publicAddress: publicAddress,
             nonce: nonce
-        }));
-    } catch (err) {
-        next(err);
+        });
     }
-});
+    else {
+        await AccountRepository.create({
+            publicAddress: publicAddress,
+            nonce: nonce
+        });
+        await IssuerRepository.create({
+            id: publicAddress,
+            name: null,
+            email: null
+        });
+    }
+    return nonce;
+};
 
-export default router;
+const validateSignature = async (publicAddress: string, signature: string) => {
+    const nonce = (await AccountRepository.findByPublicAddress(publicAddress))?.nonce;
+    if (!isSignatureValid(nonce, publicAddress, signature)) {
+        throw new UnauthorizedError('');
+    }
+    return jwt.generateToken({
+        publicAddress: publicAddress,
+        nonce: nonce
+    })
+};
+
+
+export default {
+    getNonce: getNonce,
+    validateSignature: validateSignature
+};

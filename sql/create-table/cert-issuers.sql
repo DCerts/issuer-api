@@ -1,5 +1,5 @@
 create table if not exists cert_issuers (
-    id int auto_increment primary key,
+    id integer auto_increment,
     cert_id text,
     issuer_id text,
     created_at timestamp default current_timestamp,
