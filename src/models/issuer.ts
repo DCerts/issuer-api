@@ -1,5 +1,5 @@
 interface Issuer {
-    id: string,
+    id: string, // public address
     name: string | null,
     email: string | null
 }

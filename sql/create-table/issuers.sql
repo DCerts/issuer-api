@@ -1,6 +1,5 @@
 create table if not exists issuers (
-    id integer auto_increment,
-    public_address text,
+    public_address text primary key,
     full_name text,
     email text,
     created_at timestamp default current_timestamp,

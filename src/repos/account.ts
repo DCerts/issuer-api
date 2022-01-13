@@ -5,14 +5,12 @@ import { Account } from '../models/account';
 
 class AccountRepository extends Repository {
     private findByPublicAddressSQL: string;
-    private findByNonceSQL: string;
     private createWithPublicAddressAndNonceSQL: string;
     private saveWithPublicAddressAndNonceSQL: string;
 
     constructor() {
         super();
         this.findByPublicAddressSQL = SQL.from('select-from/accounts/by-public-address.sql').build();
-        this.findByNonceSQL = SQL.from('select-from/accounts/by-nonce.sql').build();
         this.createWithPublicAddressAndNonceSQL
             = SQL.from('insert-into/accounts/with-public-address-with-nonce.sql').build();
         this.saveWithPublicAddressAndNonceSQL
@@ -24,19 +22,8 @@ class AccountRepository extends Repository {
         if (result) {
             return {
                 publicAddress: result['public_address'],
+                role: result['role'],
                 nonce: result['nonce'],
-                deleted: result['deleted']
-            };
-        }
-    }
-
-    async findByNonce(nonce: string) {
-        const result = await this.db?.get(this.findByNonceSQL, [nonce]);
-        if (result) {
-            return {
-                publicAddress: result['public_address'],
-                nonce: result['nonce'],
-                deleted: result['deleted']
             };
         }
     }

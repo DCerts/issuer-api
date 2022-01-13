@@ -1,6 +1,5 @@
 create table if not exists students (
-    id integer auto_increment,
-    student_id text,
+    student_id text primary key,
     full_name text,
     email text,
     created_at timestamp default current_timestamp,

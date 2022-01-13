@@ -6,12 +6,14 @@ import { Issuer } from '../models/issuer';
 class IssuerRepository extends Repository {
     private findByPublicAddressSQL: string;
     private createWithPublicAddressSQL: string;
+    private createWithPublicAddressAndFullNameAndEmailSQL: string;
     private saveByPublicAddressSQL: string;
 
     constructor() {
         super();
         this.findByPublicAddressSQL = SQL.from('select-from/issuers/by-public-address.sql').build();
         this.createWithPublicAddressSQL = SQL.from('insert-into/issuers/with-public-address.sql').build();
+        this.createWithPublicAddressAndFullNameAndEmailSQL = SQL.from('insert-into/issuers/with-public-address-with-full-name-with-email.sql').build();
         this.saveByPublicAddressSQL = SQL.from('update/issuers/by-public-address-with-full-name-with-email.sql').build();
     }
 
@@ -28,8 +30,8 @@ class IssuerRepository extends Repository {
 
     async create(issuer: Issuer) {
         await this.db?.run(
-            this.createWithPublicAddressSQL,
-            [issuer.id]
+            this.createWithPublicAddressAndFullNameAndEmailSQL,
+            [issuer.id, issuer.name, issuer.email]
         );
     }
 
