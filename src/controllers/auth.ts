@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { UnauthorizedError } from '../errors/http';
+import { NotFoundError, UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 import authService from '../services/auth';
 
@@ -8,8 +8,14 @@ const router = Router();
 
 router.get('/:publicAddress/nonce', async (req, res) => {
     const publicAddress = req.params.publicAddress;
-    const nonce = await authService.getNonce(publicAddress);
-    res.json(nonce);
+    try {
+        const nonce = await authService.getNonce(publicAddress);
+        res.json(nonce);
+    } catch (err) {
+        if (err instanceof NotFoundError) {
+            throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
+        }
+    }
 });
 
 router.post('/:publicAddress', async (req, res) => {

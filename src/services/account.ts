@@ -3,14 +3,14 @@ import { Account } from '../models/account';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors/http';
 
 
-const findByPublicAddress = async (publicAddress: string) => {
-    const account = await AccountRepository.findByPublicAddress(publicAddress);
+const findById = async (id: string) => {
+    const account = await AccountRepository.findById(id);
     if (!account) {
-        throw new UnauthorizedError('');
+        throw new NotFoundError('');
     }
     return account;
 };
 
 export default {
-    findByPublicAddress: findByPublicAddress
+    findById: findById
 };

@@ -1,7 +1,10 @@
 interface Account {
-    publicAddress: string,
+    id: string,
     role?: Role,
-    nonce: string
+    name: string,
+    birthday?: string,
+    email: string,
+    nonce?: string
 }
 
 enum Role {

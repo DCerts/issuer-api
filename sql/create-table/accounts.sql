@@ -1,7 +1,9 @@
 create table if not exists accounts (
-    id integer auto_increment,
-    public_address text,
-    role int not null default -1, -- 0: school, 1: issuer, -1: not set
+    account_id text primary key,
+    role_id integer not null default 1,
+    full_name text not null,
+    birthday date,
+    email text not null,
     nonce text,
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp,

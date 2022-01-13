@@ -1,21 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { Account } from '../models/account';
 import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'Vietnam';
+const JWT_SECRET = process.env.JWT_SECRET || 'Tuan';
 const JWT_VALIDITY = 60;
 
-const generateToken = (account: Account): string => {
+const generateToken = (account: {
+    id: string,
+    nonce: string
+}): string => {
     return jwt.sign(account, JWT_SECRET, {
         expiresIn: Math.ceil((+new Date()) / 1000) + JWT_VALIDITY
     });
 };
 
-const verifyToken = (token: string): jwt.JwtPayload => {
+const verifyToken = (token: string): jwt.JwtPayload | {
+    id: string,
+    nonce: string,
+    exp: number
+} => {
     return jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
 };
 
@@ -39,15 +45,15 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = getTokenFromRequest(req);
         if (!token) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_INVALID);
-        const accountPayload = verifyToken(token);
-        console.log(accountPayload);
-        const publicAddress = accountPayload['publicAddress'];
-        const nonce = accountPayload['nonce'];
-        const expired = !accountPayload.exp
+        const payload = verifyToken(token);
+        console.log(payload);
+        const publicAddress = payload.id;
+        const nonce = payload.nonce;
+        const expired = !payload.exp
             ? true
-            : accountPayload.exp * 1000 < +new Date();
+            : payload.exp * 1000 < +new Date();
         if (expired) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_EXPIRED);
-        const existed = (await AccountRepository.findByPublicAddress(publicAddress))?.nonce === nonce;
+        const existed = (await AccountRepository.findById(publicAddress))?.nonce === nonce;
         if (!existed) throw new UnauthorizedError(req.originalUrl, ErrorCode.NONCE_NOT_MATCHED);
         next();
     } catch (err) {
@@ -56,17 +62,23 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 
-const getAccountFromToken = (token: string): Account => {
-    const accountPayload = verifyToken(token);
-    const publicAddress = accountPayload['publicAddress'];
-    const nonce = accountPayload['nonce'];
+const getAccountFromToken = (token: string): {
+    id: string,
+    nonce: string
+} => {
+    const payload = verifyToken(token);
+    const publicAddress = payload.id;
+    const nonce = payload.nonce;
     return {
-        publicAddress: publicAddress,
+        id: publicAddress,
         nonce: nonce
     };
 };
 
-const getAccountFromRequest = (req: Request): Account => {
+const getAccountFromRequest = (req: Request): {
+    id: string,
+    nonce: string
+} => {
     const token = getTokenFromRequest(req);
     if (!token) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_INVALID);
     return getAccountFromToken(token);

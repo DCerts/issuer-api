@@ -1,45 +1,80 @@
 import Repository from './base';
-import { SQL } from '../utils/db';
+import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Account } from '../models/account';
 
 
 class AccountRepository extends Repository {
-    private findByPublicAddressSQL: string;
-    private createWithPublicAddressAndNonceSQL: string;
-    private saveWithPublicAddressAndNonceSQL: string;
-
     constructor() {
         super();
-        this.findByPublicAddressSQL = SQL.from('select-from/accounts/by-public-address.sql').build();
-        this.createWithPublicAddressAndNonceSQL
-            = SQL.from('insert-into/accounts/with-public-address-with-nonce.sql').build();
-        this.saveWithPublicAddressAndNonceSQL
-            = SQL.from('update/accounts/by-public-address-with-nonce.sql').build();
+        this.loadQueries();
     }
 
-    async findByPublicAddress(publicAddress: string) {
-        const result = await this.db?.get(this.findByPublicAddressSQL, [publicAddress]);
-        if (result) {
-            return {
-                publicAddress: result['public_address'],
-                role: result['role'],
-                nonce: result['nonce'],
-            };
-        }
+    static convertToAccount(result: any): Account | null {
+        if (!result) return null;
+        return {
+            id: result['account_id'],
+            role: result['role_id'],
+            name: result['full_name'],
+            birthday: result['birthday'],
+            email: result['email'],
+            nonce: result['nonce']
+        };
     }
 
-    async create(account: Account) {
-        await this.db?.run(
-            this.createWithPublicAddressAndNonceSQL,
-            [account.publicAddress, account.nonce]
+    async loadQueries() {
+        this.addQuery(
+            this.findById.name,
+            SimpleSQLBuilder.new()
+                .select('accounts')
+                .by('id')
+                .build()
+        );
+        this.addQuery(
+            this.create.name,
+            SimpleSQLBuilder.new()
+                .insert('accounts')
+                .with('id', 'name', 'birthday', 'email')
+                .build()
+        );
+        this.addQuery(
+            this.updateById.name,
+            SimpleSQLBuilder.new()
+                .update('accounts')
+                .with('name', 'birthday', 'email').by('id')
+                .build()
+        );
+        this.addQuery(
+            this.updateNonceById.name,
+            SimpleSQLBuilder.new()
+                .update('accounts')
+                .with('nonce').by('id')
+                .build()
         );
     }
 
-    async save(account: Account) {
-        await this.db?.run(this.saveWithPublicAddressAndNonceSQL, [
-            account.nonce,
-            account.publicAddress
+    async findById(id: string) {
+        const query = this.getQuery(this.findById.name);
+        const result = await this.db?.get(query, [id]);
+        return AccountRepository.convertToAccount(result);
+    }
+
+    async create(account: Account) {
+        const query = this.getQuery(this.create.name);
+        await this.db?.run(query, [
+            account.id, account.name, account.birthday, account.email
         ]);
+    }
+
+    async updateById(id: string, account: Account) {
+        const query = this.getQuery(this.updateById.name);
+        await this.db?.run(query, [
+            account.name, account.birthday, account.email, id
+        ]);
+    }
+
+    async updateNonceById(id: string, nonce: string) {
+        const query = this.getQuery(this.updateNonceById.name);
+        await this.db?.run(query, [nonce, id]);
     }
 }
 

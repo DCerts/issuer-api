@@ -1,8 +1,7 @@
-create table if not exists students (
-    student_id text primary key,
-    full_name text not null,
-    birthday date,
-    email text,
+create table if not exists groups (
+    group_id integer primary key,
+    threshold integer not null default 1,
+    available boolean default false,
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp,
     deleted_at timestamp,

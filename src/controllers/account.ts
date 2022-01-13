@@ -1,5 +1,5 @@
 import { Request, Router } from 'express';
-import { UnauthorizedError } from '../errors/http';
+import { NotFoundError, UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 import { Account } from '../models/account';
 import accountService from '../services/account';
@@ -9,20 +9,20 @@ import { getAccountFromRequest } from '../utils/jwt';
 const router = Router();
 
 const getPublicAddress = (req: Request) => {
-    return getAccountFromRequest(req).publicAddress;
+    return getAccountFromRequest(req).id;
 };
 
 router.get('/', async (req, res) => {
     const publicAddress = getPublicAddress(req);
     try {
-        const account: Account = await accountService.findByPublicAddress(publicAddress);
+        const account: Account = await accountService.findById(publicAddress);
         res.json({
-            publicAddress: account.publicAddress,
+            publicAddress: account.id,
             role: account.role
         });
     } catch (err) {
-        if (err instanceof UnauthorizedError) {
-            throw new UnauthorizedError(req.originalUrl, ErrorCode.NOT_FOUND);
+        if (err instanceof NotFoundError) {
+            throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
         }
     }
 });
