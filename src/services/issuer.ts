@@ -1,21 +1,30 @@
-import { Router } from 'express';
-import { getAccountFromRequest } from '../utils/jwt';
-import * as repository from '../repos/issuer';
-import { NotFoundError } from '../errors/http';
-import { ErrorCode } from '../errors/code';
+import IssuerRepository from '../repos/issuer';
+import { BadRequestError, NotFoundError } from '../errors/http';
+import { Issuer } from '../models/issuer';
 
 
-const router = Router();
-
-router.get('/', async (req, res) => {
-    const id = getAccountFromRequest(req).publicAddress;
-    if (await repository.hasIssuerExisted(id)) {
-        const issuer = await repository.getIssuer(id);
-        res.json(issuer);
+const findByPublicAddress = async (publicAddress: string) => {
+    const issuer = await IssuerRepository.findByPublicAddress(publicAddress);
+    if (!issuer) {
+        throw new NotFoundError('');
     }
-    else {
-        throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
-    }
-});
+    return issuer;
+};
 
-export default router;
+const createIssuer = async (issuer: Issuer) => {
+    const issuerExists = await IssuerRepository.findByPublicAddress(issuer.id);
+    if (issuerExists) {
+        throw new BadRequestError('');
+    }
+    await IssuerRepository.create(issuer);
+};
+
+const updateIssuer = async (issuer: Issuer) => {
+    await IssuerRepository.save(issuer);
+};
+
+export default {
+    findByPublicAddress: findByPublicAddress,
+    createIssuer: createIssuer,
+    updateIssuer: updateIssuer
+};

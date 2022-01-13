@@ -26,15 +26,15 @@ class Error {
     }
 }
 
-class UnauthorizedError extends Error {
+class BadRequestError extends Error {
     constructor(path: string, code?: ErrorCode | string, message?: string) {
-        super(401, path, code, message);
+        super(400, path, code, message);
     }
 }
 
-class BadRequestError extends Error {
+class UnauthorizedError extends Error {
     constructor(path: string, code?: ErrorCode | string, message?: string) {
-        super(403, path, code, message);
+        super(401, path, code, message);
     }
 }
 

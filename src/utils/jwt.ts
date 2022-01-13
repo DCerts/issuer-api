@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { Account } from '../entities/account';
-import * as repository from '../repos/account';
+import { Account } from '../models/account';
+import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 
@@ -32,6 +32,9 @@ const getTokenFromRequest = (req: Request): string | undefined => {
     return authorization.split(' ')[1];
 };
 
+/**
+ * Validate the JSON Web Token (JWT) of the request.
+ */
 const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = getTokenFromRequest(req);
@@ -44,7 +47,7 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
             ? true
             : accountPayload.exp * 1000 < +new Date();
         if (expired) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_EXPIRED);
-        const existed = await repository.hasAccountWithNonceExisted(publicAddress, nonce);
+        const existed = (await AccountRepository.findByPublicAddress(publicAddress))?.nonce === nonce;
         if (!existed) throw new UnauthorizedError(req.originalUrl, ErrorCode.NONCE_NOT_MATCHED);
         next();
     } catch (err) {
