@@ -23,28 +23,28 @@ class AccountRepository extends Repository {
 
     async loadQueries() {
         this.addQuery(
-            this.findById.name,
+            'findById',
             SimpleSQLBuilder.new()
                 .select('accounts')
                 .by('id')
                 .build()
         );
         this.addQuery(
-            this.create.name,
+            'create',
             SimpleSQLBuilder.new()
                 .insert('accounts')
                 .with('id', 'name', 'birthday', 'email')
                 .build()
         );
         this.addQuery(
-            this.updateById.name,
+            'updateById',
             SimpleSQLBuilder.new()
                 .update('accounts')
                 .with('name', 'birthday', 'email').by('id')
                 .build()
         );
         this.addQuery(
-            this.updateNonceById.name,
+            'updateNonceById',
             SimpleSQLBuilder.new()
                 .update('accounts')
                 .with('nonce').by('id')
@@ -53,27 +53,27 @@ class AccountRepository extends Repository {
     }
 
     async findById(id: string) {
-        const query = this.getQuery(this.findById.name);
+        const query = this.getQuery('findById');
         const result = await this.db?.get(query, [id]);
         return AccountRepository.convertToAccount(result);
     }
 
     async create(account: Account) {
-        const query = this.getQuery(this.create.name);
+        const query = this.getQuery('create');
         await this.db?.run(query, [
             account.id, account.name, account.birthday, account.email
         ]);
     }
 
     async updateById(id: string, account: Account) {
-        const query = this.getQuery(this.updateById.name);
+        const query = this.getQuery('updateById');
         await this.db?.run(query, [
             account.name, account.birthday, account.email, id
         ]);
     }
 
     async updateNonceById(id: string, nonce: string) {
-        const query = this.getQuery(this.updateNonceById.name);
+        const query = this.getQuery('updateNonceById');
         await this.db?.run(query, [nonce, id]);
     }
 }

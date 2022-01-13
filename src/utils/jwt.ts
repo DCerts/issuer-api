@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
+import logger from './logger';
 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'Tuan';
@@ -20,9 +21,16 @@ const generateToken = (account: {
 const verifyToken = (token: string): jwt.JwtPayload | {
     id: string,
     nonce: string,
-    exp: number
+    exp?: number
 } => {
-    return jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    try {
+        return jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    } catch (err) {
+        return {
+            id: null,
+            nonce: null
+        };
+    }
 };
 
 const randomizeText = (length: number): string => {
@@ -46,7 +54,7 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
         const token = getTokenFromRequest(req);
         if (!token) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_INVALID);
         const payload = verifyToken(token);
-        console.log(payload);
+        if (!payload) throw new UnauthorizedError(req.originalUrl, ErrorCode.TOKEN_INVALID);
         const publicAddress = payload.id;
         const nonce = payload.nonce;
         const expired = !payload.exp

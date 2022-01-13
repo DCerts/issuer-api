@@ -24,6 +24,10 @@ class Error {
         this.message = message;
         this.props = props;
     }
+
+    beautify(): string {
+        return JSON.stringify(this, null, 2);
+    }
 }
 
 class BadRequestError extends Error {

@@ -1,6 +1,7 @@
 import sqlite3 from 'sqlite3';
 import { Database } from 'sqlite';
 import DB, { connect } from '../utils/db';
+import logger from '../utils/logger';
 
 
 abstract class Repository {
@@ -22,7 +23,9 @@ abstract class Repository {
     }
 
     protected getQuery(name: string): string {
-        return this.queries.get(name) || '';
+        const query = this.queries.get(name) || '';
+        logger.info(query.replace(/\n/g, ' '));
+        return query;
     }
 
     protected abstract loadQueries(): void;
