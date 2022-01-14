@@ -10,7 +10,7 @@ import { Role } from '../models/account';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const JWT_VALIDITY = process.env.JWT_VALIDITY || 3600;
+const JWT_VALIDITY = process.env.JWT_VALIDITY || '3600s';
 
 const generateToken = (account: {
     id: string,
