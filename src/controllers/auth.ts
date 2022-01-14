@@ -7,7 +7,7 @@ import AuthService from '../services/auth';
 const router = Router();
 
 router.get('/:publicAddress/nonce', async (req, res) => {
-    const publicAddress = req.params.publicAddress;
+    const publicAddress = req.params.publicAddress.toLowerCase();
     try {
         const nonce = await AuthService.getNonce(publicAddress);
         res.json(nonce);
@@ -19,7 +19,7 @@ router.get('/:publicAddress/nonce', async (req, res) => {
 });
 
 router.post('/:publicAddress', async (req, res) => {
-    const publicAddress = req.params.publicAddress;
+    const publicAddress = req.params.publicAddress.toLowerCase();
     const signature = req.body.signature;
     try {
         const token = await AuthService.validateSignature(publicAddress, signature);

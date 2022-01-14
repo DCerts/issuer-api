@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
-import logger from './logger';
 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'Tuan';
@@ -14,7 +13,7 @@ const generateToken = (account: {
     nonce: string
 }): string => {
     return jwt.sign(account, JWT_SECRET, {
-        expiresIn: Math.ceil((+new Date()) / 1000) + JWT_VALIDITY
+        expiresIn: JWT_VALIDITY
     });
 };
 
@@ -75,10 +74,10 @@ const getAccountFromToken = (token: string): {
     nonce: string
 } => {
     const payload = verifyToken(token);
-    const publicAddress = payload.id;
-    const nonce = payload.nonce;
+    const publicAddress: string = payload.id;
+    const nonce: string = payload.nonce;
     return {
-        id: publicAddress,
+        id: publicAddress.toLowerCase(),
         nonce: nonce
     };
 };

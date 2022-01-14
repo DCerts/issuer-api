@@ -1,6 +1,8 @@
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
 import { open, Database } from 'sqlite';
+import logger from './logger';
+import { Account } from '../models/account';
 
 
 sqlite3.verbose();
@@ -99,6 +101,7 @@ const createTables = async (...tables: string[]) => {
     for (const table of tables) {
         const sql = SQL.from(`create-table/${table}.sql`).build();
         await DB.get().run(sql);
+        logger.info(`Table ${table} created.`);
     }
 };
 
@@ -113,6 +116,22 @@ const createAllTables = async () => {
         }
     }
     await createTables(...tables);
+};
+
+const createAccounts = async (...accounts: Account[]) => {
+    const dir = 'insert-into/accounts/with-id-with-name-with-birthday-with-email-with-role';
+    const sql = SQL.from(dir).build();
+    for (const account of accounts) {
+        await DB.get().run(sql, [
+            account.id, account.name, account.birthday, account.email, account.role
+        ]);
+    }
+};
+
+const createSchoolAccounts = async () => {
+    const settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
+    const accounts: Account[] = settings.accounts || [];
+    await createAccounts(...accounts);
 };
 
 /**
@@ -132,7 +151,8 @@ enum SimpleSQLAction {
 
 enum SimpleSQLKeyword {
     WITH = 'with',
-    BY = 'by'
+    BY = 'by',
+    AND = 'and'
 }
 
 /**
@@ -205,10 +225,17 @@ class SimpleSQLBuilder {
         this.columns.set(SimpleSQLKeyword.BY, columns);
         return this;
     }
+
+    and(...properties: string[]): SimpleSQLBuilder {
+        this.columns.set(SimpleSQLKeyword.AND, properties);
+        return this;
+    }
 }
 
 export default DB;
 export {
-    SQL, createTables, createAllTables, connect,
+    SQL,
+    createAccounts, createSchoolAccounts,
+    createTables, createAllTables, connect,
     SimpleSQLBuilder
 };

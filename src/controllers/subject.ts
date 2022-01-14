@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { BadRequestError, NotFoundError, NotImplementedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
-import { Student } from '../models/student';
-import StudentService from '../services/student';
+import { Subject } from '../models/subject';
+import SubjectService from '../services/subject';
 
 
 const router = Router();
@@ -10,8 +10,8 @@ const router = Router();
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const student: Student = await StudentService.findById(id);
-        res.json(student);
+        const subject: Subject = await SubjectService.findById(id);
+        res.json(subject);
     } catch (err) {
         if (err instanceof NotFoundError) {
             throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
@@ -21,14 +21,14 @@ router.get('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     const id = req.params.id;
-    const student: Student = req.body;
+    const subject: Subject = req.body;
     try {
-        student.id = id;
-        await StudentService.create(student);
+        subject.id = id;
+        await SubjectService.create(subject);
         res.sendStatus(201);
     } catch (err) {
         if (err instanceof BadRequestError) {
-            await StudentService.replaceById(id, student);
+            await SubjectService.replaceById(id, subject);
             res.sendStatus(200);
         }
         else {
@@ -38,10 +38,10 @@ router.put('/:id', async (req, res) => {
 });
 
 router.patch('/:id', async (req, res) => {
-    const student: Student = req.body;
+    const subject: Subject = req.body;
     const id = req.params.id;
     try {
-        await StudentService.updateById(id, student);
+        await SubjectService.updateById(id, subject);
         res.sendStatus(200);
     } catch (err) {
         if (err instanceof NotFoundError) {

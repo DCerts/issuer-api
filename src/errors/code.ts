@@ -10,7 +10,8 @@ enum ErrorCode {
     NOT_FOUND = 'not_found',
     EXISTED = 'existed',
     NOT_IMPLEMENTED = 'not_implemented',
-    PATH_NOT_FOUND = 'path_not_found'
+    PATH_NOT_FOUND = 'path_not_found',
+    GROUP_ALREADY_AVAILABLE = 'group_already_available'
 }
 
 export {
