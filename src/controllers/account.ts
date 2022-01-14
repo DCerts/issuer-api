@@ -2,7 +2,7 @@ import { Request, Router } from 'express';
 import { NotFoundError, UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 import { Account } from '../models/account';
-import accountService from '../services/account';
+import AccountService from '../services/account';
 import { getAccountFromRequest } from '../utils/jwt';
 
 
@@ -15,7 +15,7 @@ const getPublicAddress = (req: Request) => {
 router.get('/', async (req, res) => {
     const publicAddress = getPublicAddress(req);
     try {
-        const account: Account = await accountService.findById(publicAddress);
+        const account: Account = await AccountService.findById(publicAddress);
         res.json({
             publicAddress: account.id,
             role: account.role

@@ -48,9 +48,16 @@ class NotFoundError extends Error {
     }
 }
 
+class NotImplementedError extends Error {
+    constructor(path: string, code?: ErrorCode | string, message?: string) {
+        super(501, path, code, message);
+    }
+}
+
 export {
     Error,
     UnauthorizedError,
     BadRequestError,
-    NotFoundError
+    NotFoundError,
+    NotImplementedError
 };

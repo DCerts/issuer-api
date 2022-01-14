@@ -3,13 +3,13 @@ import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Account } from '../models/account';
 
 
-class AccountRepository extends Repository {
+class AccountRepository extends Repository<Account> {
     constructor() {
         super();
         this.loadQueries();
     }
 
-    static convertToAccount(result: any): Account | null {
+    override convertToEntity(result: any): Account | null {
         if (!result) return null;
         return {
             id: result['account_id'],
@@ -21,7 +21,7 @@ class AccountRepository extends Repository {
         };
     }
 
-    async loadQueries() {
+    override async loadQueries() {
         this.addQuery(
             'findById',
             SimpleSQLBuilder.new()
@@ -55,7 +55,7 @@ class AccountRepository extends Repository {
     async findById(id: string) {
         const query = this.getQuery('findById');
         const result = await this.db?.get(query, [id]);
-        return AccountRepository.convertToAccount(result);
+        return this.convertToEntity(result);
     }
 
     async create(account: Account) {

@@ -11,6 +11,24 @@ const findById = async (id: string) => {
     return account;
 };
 
+const create = async (account: Account) => {
+    const existed = await AccountRepository.findById(account.id);
+    if (existed) {
+        throw new BadRequestError('');
+    }
+    await AccountRepository.create(account);
+};
+
+const updateById = async (id: string, account: Account) => {
+    const existed = await AccountRepository.findById(id);
+    if (!existed) {
+        throw new NotFoundError('');
+    }
+    await AccountRepository.updateById(id, account);
+};
+
 export default {
-    findById: findById
+    findById: findById,
+    create: create,
+    updateById: updateById
 };

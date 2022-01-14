@@ -4,7 +4,7 @@ import DB, { connect } from '../utils/db';
 import logger from '../utils/logger';
 
 
-abstract class Repository {
+abstract class Repository<T> {
     protected db: Database<sqlite3.Database, sqlite3.Statement> | undefined;
     protected queries: Map<string, string>;
 
@@ -28,6 +28,7 @@ abstract class Repository {
         return query;
     }
 
+    protected abstract convertToEntity(result: any): T | null;
     protected abstract loadQueries(): void;
 }
 
