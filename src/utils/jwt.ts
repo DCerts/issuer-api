@@ -1,12 +1,16 @@
+import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
+import { Role } from '../models/account';
 
 
-const JWT_SECRET = process.env.JWT_SECRET || 'Tuan';
-const JWT_VALIDITY = 60;
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_VALIDITY = process.env.JWT_VALIDITY || 3600;
 
 const generateToken = (account: {
     id: string,
@@ -68,16 +72,24 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const authorizeSchool = async (req: Request) => {
+    const accountId = getAccountFromRequest(req).id;
+    const account = await AccountRepository.findById(accountId);
+    if (!account || account.role !== Role.SCHOOL) {
+        throw new UnauthorizedError(req.originalUrl, ErrorCode.UNAUTHORIZED);
+    }
+};
+
 
 const getAccountFromToken = (token: string): {
     id: string,
     nonce: string
 } => {
     const payload = verifyToken(token);
-    const publicAddress: string = payload.id;
-    const nonce: string = payload.nonce;
+    const id: string = payload.id || '';
+    const nonce: string = payload.nonce || '';
     return {
-        id: publicAddress.toLowerCase(),
+        id: id.toLowerCase(),
         nonce: nonce
     };
 };
@@ -96,6 +108,7 @@ export {
     verifyToken,
     randomizeText,
     jwtFilter,
+    authorizeSchool,
     getAccountFromToken,
     getAccountFromRequest
 };

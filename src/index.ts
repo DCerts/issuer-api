@@ -15,13 +15,11 @@ import logger from './utils/logger';
 dotenv.config();
 
 // Connect to the database then create tables if not exists.
-const setup = async () => {
+(async () => {
     await connect();
     await createAllTables();
     await createSchoolAccounts();
-};
-
-setup();
+})();
 
 
 const app: Express = express();

@@ -3,7 +3,8 @@ import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors/htt
 import { ErrorCode } from '../errors/code';
 import { Group } from '../models/group';
 import GroupService from '../services/group';
-import { getAccountFromRequest } from '../utils/jwt';
+import { getAccountFromRequest, authorizeSchool } from '../utils/jwt';
+import { Account } from '../models/account';
 
 
 const router = Router();
@@ -25,33 +26,46 @@ router.get('/:groupId', async (req, res) => {
 });
 
 router.put('/:groupId', async (req, res) => {
+    await authorizeSchool(req);
     const groupId: number = Number.parseInt(req.params.groupId);
     const accountId = getAccountId(req);
     const group: Group = req.body;
-    try {
-        group.id = groupId;
-        await GroupService.create(group, accountId);
-        await GroupService.confirm(groupId, accountId);
-        res.sendStatus(201);
-    } catch (err) {
-        if (err instanceof BadRequestError) {
-            throw new BadRequestError(req.originalUrl, ErrorCode.EXISTED);
+    if (group.threshold) {
+        try {
+            group.id = groupId;
+            await GroupService.create(group, accountId);
+            await GroupService.confirm(groupId, accountId);
+            res.sendStatus(201);
+        } catch (err) {
+            if (err instanceof BadRequestError) {
+                throw new BadRequestError(req.originalUrl, ErrorCode.EXISTED);
+            }
+        }
+    } else {
+        try {
+            await GroupService.confirm(groupId, accountId);
+            res.sendStatus(200);
+        } catch (err) {
+            if (err instanceof NotFoundError) {
+                throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
+            }
+            if (err instanceof BadRequestError) {
+                throw new BadRequestError(req.originalUrl, ErrorCode.GROUP_ALREADY_AVAILABLE);
+            }
         }
     }
 });
 
-router.patch('/:groupId/confirm', async (req, res) => {
-    const groupId: number = Number.parseInt(req.params.groupId);
-    const accountId = getAccountId(req);
+router.put('/:groupId/members', async (req, res) => {
+    await authorizeSchool(req);
+    const groupId = Number.parseInt(req.params.groupId);
+    const members: Account[] = req.body;
     try {
-        await GroupService.confirm(groupId, accountId);
+        await GroupService.addMembers(groupId, members);
         res.sendStatus(200);
     } catch (err) {
         if (err instanceof NotFoundError) {
             throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
-        }
-        if (err instanceof BadRequestError) {
-            throw new BadRequestError(req.originalUrl, ErrorCode.GROUP_ALREADY_AVAILABLE);
         }
     }
 });

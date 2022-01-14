@@ -1,2 +1,2 @@
-insert into groups (group_id, threshold)
-values (?, ?);
+insert into groups (group_id, group_name, threshold)
+values (?, ?, ?);
