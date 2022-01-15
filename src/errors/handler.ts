@@ -5,7 +5,7 @@ import { Error, NotFoundError } from './http';
 
 
 /**
- * Handle errors for HTTP requests.
+ * Handles errors for HTTP requests.
  */
 const httpErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     err.path = req.originalUrl;
@@ -13,6 +13,9 @@ const httpErrorHandler = (err: Error, req: Request, res: Response, next: NextFun
     return res.status(err.status).json(err);
 };
 
+/**
+ * Handles errors for Page Not Found (404).
+ */
 const pathNotFoundHandler = (req: Request, res: Response, next: NextFunction) => {
     const err = new NotFoundError(req.originalUrl, ErrorCode.PATH_NOT_FOUND);
     return res.status(err.status).json(err);

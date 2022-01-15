@@ -2,6 +2,9 @@ import winston from 'winston';
 import path from 'path';
 
 
+/**
+ * Provides some logging utilities.
+ */
 const logger = winston.createLogger({
     format: winston.format.combine(
         winston.format.timestamp({

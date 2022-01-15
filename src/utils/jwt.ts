@@ -51,7 +51,7 @@ const getTokenFromRequest = (req: Request): string | undefined => {
 };
 
 /**
- * Validate the JSON Web Token (JWT) of the request.
+ * Validates the JSON Web Token (JWT) of the request.
  */
 const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
     try {
