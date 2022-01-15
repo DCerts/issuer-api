@@ -1,4 +1,5 @@
 import { EMPTY } from '../commons/str';
+import { ErrorCode } from '../errors/code';
 import { NotFoundError, UnauthorizedError } from '../errors/http';
 import AccountRepository from '../repos/account';
 import { isSignatureValid } from '../utils/eth';
@@ -17,7 +18,7 @@ const getNonce = async (publicAddress: string) => {
         );
     }
     else {
-        throw new NotFoundError(EMPTY);
+        throw new NotFoundError(EMPTY, ErrorCode.ACCOUNT_NOT_FOUND);
     }
     return nonce;
 };
@@ -25,7 +26,7 @@ const getNonce = async (publicAddress: string) => {
 const validateSignature = async (publicAddress: string, signature: string) => {
     const nonce = (await AccountRepository.findById(publicAddress))?.nonce || EMPTY;
     if (!isSignatureValid(nonce, publicAddress, signature)) {
-        throw new UnauthorizedError(EMPTY);
+        throw new UnauthorizedError(EMPTY, ErrorCode.UNAUTHORIZED);
     }
     return jwt.generateToken({
         id: publicAddress,

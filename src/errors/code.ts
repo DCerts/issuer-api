@@ -11,6 +11,7 @@ enum ErrorCode {
     EXISTED = 'existed',
     NOT_IMPLEMENTED = 'not_implemented',
     PATH_NOT_FOUND = 'path_not_found',
+    GROUP_NOT_FOUND = 'group_not_found',
     GROUP_ALREADY_AVAILABLE = 'group_already_available',
     ACCOUNT_NOT_FOUND = 'account_not_found',
     MEMBER_MISSING = 'member_missing',

@@ -8,6 +8,7 @@ import { Error, NotFoundError } from './http';
  * Handle errors for HTTP requests.
  */
 const httpErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+    err.path = req.originalUrl;
     logger.error(err.beautify());
     return res.status(err.status).json(err);
 };

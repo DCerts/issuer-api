@@ -1,9 +1,7 @@
 import { Request, Router } from 'express';
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../errors/http';
-import { ErrorCode } from '../errors/code';
-import { Account, Role } from '../models/account';
+import { Account } from '../models/account';
 import AccountService from '../services/account';
-import { getAccountFromRequest } from '../utils/jwt';
+import { authorizeSchool, getAccountFromRequest } from '../utils/jwt';
 
 
 const router = Router();
@@ -14,36 +12,18 @@ const getAccountId = (req: Request) => {
 
 router.get('/', async (req, res) => {
     const id = getAccountId(req);
-    try {
-        const account: Account = await AccountService.findById(id);
-        res.json({
-            id: account.id,
-            role: account.role
-        });
-    } catch (err) {
-        if (err instanceof NotFoundError) {
-            throw new NotFoundError(req.originalUrl, ErrorCode.NOT_FOUND);
-        }
-    }
+    const account: Account = await AccountService.findById(id);
+    account.nonce = undefined; // nonce is hidden
+    res.json(account);
 });
 
 router.put('/:accountId', async (req, res) => {
-    const id = getAccountId(req);
-    const role = (await AccountService.findById(id)).role;
-    if (role !== Role.SCHOOL) {
-        throw new UnauthorizedError(req.originalUrl, ErrorCode.UNAUTHORIZED);
-    }
+    await authorizeSchool(req);
     const accountId = req.params.accountId;
     const account: Account = req.body;
-    try {
-        account.id = accountId;
-        await AccountService.create(account);
-        res.sendStatus(201);
-    } catch (err) {
-        if (err instanceof BadRequestError) {
-            throw new BadRequestError(req.originalUrl, ErrorCode.EXISTED);
-        }
-    }
+    account.id = accountId;
+    await AccountService.create(account);
+    res.sendStatus(201);
 });
 
 export default router;

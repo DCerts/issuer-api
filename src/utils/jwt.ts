@@ -73,12 +73,21 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const authorizeSchool = async (req: Request) => {
+/**
+ * Permits specific role to continue requesting.
+ * @param req the request
+ * @param role the permission role
+ */
+const authorizeRole = async (req: Request, role: Role) => {
     const accountId = getAccountFromRequest(req).id;
     const account = await AccountRepository.findById(accountId);
-    if (!account || account.role !== Role.SCHOOL) {
+    if (!account || account.role !== role) {
         throw new UnauthorizedError(req.originalUrl, ErrorCode.UNAUTHORIZED);
     }
+};
+
+const authorizeSchool = async (req: Request) => {
+    await authorizeRole(req, Role.SCHOOL);
 };
 
 
@@ -109,7 +118,6 @@ export {
     verifyToken,
     randomizeText,
     jwtFilter,
-    authorizeSchool,
-    getAccountFromToken,
-    getAccountFromRequest
+    authorizeRole, authorizeSchool,
+    getAccountFromToken, getAccountFromRequest
 };

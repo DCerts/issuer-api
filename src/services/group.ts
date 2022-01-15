@@ -10,7 +10,7 @@ import { Transaction } from '../utils/db';
 
 const findByGroupId = async (groupId: number) => {
     const group = await GroupRepository.findByGroupId(groupId);
-    if (!group) throw new NotFoundError(EMPTY);
+    if (!group) throw new NotFoundError(EMPTY, ErrorCode.GROUP_NOT_FOUND);
     const members = await GroupRepository.findMembersByGroupId(groupId);
     group.members = members;
     return group;
@@ -33,11 +33,9 @@ const create = async (group: Group, accountId: string) => {
             throw new NotFoundError(EMPTY, ErrorCode.ACCOUNT_NOT_FOUND);
         }
     }
-    await Transaction.run(async () => {
+    await Transaction.for(async () => {
         await GroupRepository.create(group);
-    }, async () => {
         await GroupRepository.confirm(group.id, accountId);
-    }, async () => {
         const members = group.members || [];
         await GroupRepository.addMembers(group.id, ...members);
     });

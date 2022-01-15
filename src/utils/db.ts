@@ -64,7 +64,9 @@ class SQL {
     }
 }
 
-
+/**
+ * Class for handling database instance.
+ */
 class Database {
     private static INSTANCE: Sqlite | undefined;
 
@@ -78,13 +80,39 @@ class Database {
     }
 }
 
+interface Statement {
+    sql: string,
+    params: any[]
+};
+
+/**
+ * Utilities for database transaction.
+ */
 class Transaction {
-    static async run(...functions: Function[]) {
+    /**
+     * Start a transaction for specific actions.
+     * @param actions the asynchronous actions
+     */
+    static async for(...actions: Function[]) {
         const db = Database.get();
         try {
             await db?.begin();
-            for (const f of functions) {
-                await f();
+            for (const action of actions) {
+                await action();
+            }
+            await db?.commit();
+        } catch (err) {
+            await db?.rollback();
+            throw err;
+        }
+    }
+
+    static async run(...statements: Statement[]) {
+        const db = Database.get();
+        try {
+            await db?.begin();
+            for (const statement of statements) {
+                await db?.run(statement.sql, ...statement.params);
             }
             await db?.commit();
         } catch (err) {
@@ -124,9 +152,13 @@ const createAccounts = async (...accounts: Account[]) => {
     const dir = 'insert-into/accounts/with-id-with-name-with-birthday-with-email-with-role';
     const sql = SQL.from(dir).build();
     for (const account of accounts) {
-        await Database.get()?.run(sql, [
-            account.id, account.name, account.birthday, account.email, account.role
-        ]);
+        try {
+            await Database.get()?.run(sql, [
+                account.id, account.name, account.birthday, account.email, account.role
+            ]);
+        } catch (err) {
+            logger.error(err);
+        }
     }
 };
 

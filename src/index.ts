@@ -28,9 +28,9 @@ app.use(cors());
 app.use(express.json());
 app.use('/auth', auth);
 app.use('/account', jwtFilter, account);
-app.use('/student', student);
-app.use('/subject', subject);
-app.use('/group', group);
+app.use('/student', jwtFilter, student);
+app.use('/subject', jwtFilter, subject);
+app.use('/group', jwtFilter, group);
 app.use(pathNotFoundHandler);
 app.use(httpErrorHandler);
 

@@ -3,6 +3,9 @@ import sqlite3 from 'sqlite3';
 import betterSqlite3 from 'better-sqlite3';
 
 
+/**
+ * Abstract class with common methods with sqlite.
+ */
 export abstract class Sqlite {
     abstract connect(file: string): any;
     abstract run(sql: string, ...params: any[]): any;
@@ -13,6 +16,9 @@ export abstract class Sqlite {
     abstract rollback(): any;
 };
 
+/**
+ * Uses module sqlite3.
+ */
 class Sqlite3 extends Sqlite {
     private instance: sqlite.Database<sqlite3.Database, sqlite3.Statement> | undefined;
 
@@ -42,6 +48,9 @@ class Sqlite3 extends Sqlite {
     async rollback() {}
 }
 
+/**
+ * Uses module better-sqlite3.
+ */
 class BetterSqlite3 extends Sqlite {
     private instance: betterSqlite3.Database | undefined;
 
@@ -81,10 +90,13 @@ class BetterSqlite3 extends Sqlite {
 }
 
 export enum DatabaseType {
-    SQLITE3,
-    BETTER_SQLITE3
+    SQLITE3 = 'sqlite3',
+    BETTER_SQLITE3 = 'better-sqlite3'
 };
 
+/**
+ * Factory class for sqlite's instances.
+ */
 export default class DB {
     static get(type: DatabaseType): Sqlite | undefined {
         if (type === DatabaseType.SQLITE3) {
