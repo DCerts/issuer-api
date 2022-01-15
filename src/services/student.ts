@@ -1,3 +1,4 @@
+import { EMPTY } from '../commons/str';
 import { BadRequestError, NotFoundError } from '../errors/http';
 import { Student } from '../models/student';
 import StudentRepository from '../repos/student';
@@ -6,7 +7,7 @@ import StudentRepository from '../repos/student';
 const findById = async (id: string) => {
     const student = await StudentRepository.findById(id);
     if (!student) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     return student;
 };
@@ -14,7 +15,7 @@ const findById = async (id: string) => {
 const create = async (student: Student) => {
     const existed = await StudentRepository.findById(student.id);
     if (existed) {
-        throw new BadRequestError('');
+        throw new BadRequestError(EMPTY);
     }
     await StudentRepository.create(student);
 };
@@ -22,7 +23,7 @@ const create = async (student: Student) => {
 const updateById = async (id: string, student: Student) => {
     const existed = await StudentRepository.findById(id);
     if (!existed) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     await StudentRepository.updateById(id, {
         id: id,
@@ -35,7 +36,7 @@ const updateById = async (id: string, student: Student) => {
 const replaceById = async (id: string, student: Student) => {
     const existed = await StudentRepository.findById(id);
     if (!existed) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     await StudentRepository.updateById(id, student);
 };

@@ -1,3 +1,4 @@
+import { EMPTY } from '../commons/str';
 import { BadRequestError, NotFoundError } from '../errors/http';
 import { Subject } from '../models/subject';
 import SubjectRepository from '../repos/subject';
@@ -6,7 +7,7 @@ import SubjectRepository from '../repos/subject';
 const findById = async (id: string) => {
     const subject = await SubjectRepository.findById(id);
     if (!subject) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     return subject;
 };
@@ -14,7 +15,7 @@ const findById = async (id: string) => {
 const create = async (subject: Subject) => {
     const existed = await SubjectRepository.findById(subject.id);
     if (existed) {
-        throw new BadRequestError('');
+        throw new BadRequestError(EMPTY);
     }
     await SubjectRepository.create(subject);
 };
@@ -22,7 +23,7 @@ const create = async (subject: Subject) => {
 const updateById = async (id: string, subject: Subject) => {
     const existed = await SubjectRepository.findById(id);
     if (!existed) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     await SubjectRepository.updateById(id, {
         id: id,
@@ -34,7 +35,7 @@ const updateById = async (id: string, subject: Subject) => {
 const replaceById = async (id: string, subject: Subject) => {
     const existed = await SubjectRepository.findById(id);
     if (!existed) {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     await SubjectRepository.updateById(id, subject);
 };

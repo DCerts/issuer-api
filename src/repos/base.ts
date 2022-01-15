@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import { Database } from 'sqlite';
 import DB, { connect } from '../utils/db';
 import logger from '../utils/logger';
+import { SPACE, EMPTY, NEWLINE_REGEX } from '../commons/str';
 
 
 abstract class Repository<T> {
@@ -23,8 +24,8 @@ abstract class Repository<T> {
     }
 
     protected getQuery(name: string): string {
-        const query = this.queries.get(name) || '';
-        logger.info(query.replace(/\n/g, ' '));
+        const query = this.queries.get(name) || EMPTY;
+        logger.info(query.replace(NEWLINE_REGEX, SPACE));
         return query;
     }
 

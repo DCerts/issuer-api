@@ -1,3 +1,4 @@
+import { EMPTY } from '../commons/str';
 import { NotFoundError, UnauthorizedError } from '../errors/http';
 import AccountRepository from '../repos/account';
 import { isSignatureValid } from '../utils/eth';
@@ -16,15 +17,15 @@ const getNonce = async (publicAddress: string) => {
         );
     }
     else {
-        throw new NotFoundError('');
+        throw new NotFoundError(EMPTY);
     }
     return nonce;
 };
 
 const validateSignature = async (publicAddress: string, signature: string) => {
-    const nonce = (await AccountRepository.findById(publicAddress))?.nonce || '';
+    const nonce = (await AccountRepository.findById(publicAddress))?.nonce || EMPTY;
     if (!isSignatureValid(nonce, publicAddress, signature)) {
-        throw new UnauthorizedError('');
+        throw new UnauthorizedError(EMPTY);
     }
     return jwt.generateToken({
         id: publicAddress,

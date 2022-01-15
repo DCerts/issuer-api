@@ -3,6 +3,7 @@ import sqlite3 from 'sqlite3';
 import { open, Database } from 'sqlite';
 import logger from './logger';
 import { Account } from '../models/account';
+import { EMPTY } from '../commons/str';
 
 
 sqlite3.verbose();
@@ -70,7 +71,7 @@ class SQL {
  * A wrapper for SQLite3's Database class.
  */
 class DB {
-    private static INSTANCE: Database<sqlite3.Database, sqlite3.Statement>;
+    protected static INSTANCE: Database<sqlite3.Database, sqlite3.Statement>;
 
     static async connect(file: string) {
         if (!DB.INSTANCE) {
@@ -94,6 +95,33 @@ class DB {
 }
 
 /**
+ * Provides asynchronous methods for sqlite.
+ */
+
+ interface TransactionParam {
+    method: Function | undefined,
+    params?: any | any[],
+    throwable?: Error
+}
+
+class Transaction {
+    static async run(...methods: Function[]) {
+        const db = await DB.get();
+        try {
+            await db.run('BEGIN');
+            for (const method of methods) {
+                await method();
+            }
+            await db.run('COMMIT');
+        } catch (err) {
+            logger.error(err);
+            await db.run('ROLLBACK');
+        }
+    }
+}
+
+
+/**
  * Creates tables if they don't exist on the database.
  * @param tables the tables to create.
  */
@@ -111,7 +139,7 @@ const createAllTables = async () => {
     const tables = [];
     for (const file of files) {
         if (file.endsWith(SQL.getExtension())) {
-            const table = file.replace(SQL.getExtension(), '');
+            const table = file.replace(SQL.getExtension(), EMPTY);
             tables.push(table);
         }
     }
@@ -234,6 +262,7 @@ class SimpleSQLBuilder {
 
 export default DB;
 export {
+    Transaction, TransactionParam,
     SQL,
     createAccounts, createSchoolAccounts,
     createTables, createAllTables, connect,

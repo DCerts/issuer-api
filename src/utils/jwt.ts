@@ -5,6 +5,7 @@ import AccountRepository from '../repos/account';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 import { Role } from '../models/account';
+import { EMPTY, SPACE } from '../commons/str';
 
 
 dotenv.config();
@@ -46,7 +47,7 @@ const getTokenFromRequest = (req: Request): string | undefined => {
     if (!authorization || !authorization.startsWith('Bearer ')) {
         return;
     }
-    return authorization.split(' ')[1];
+    return authorization.split(SPACE)[1];
 };
 
 /**
@@ -86,8 +87,8 @@ const getAccountFromToken = (token: string): {
     nonce: string
 } => {
     const payload = verifyToken(token);
-    const id: string = payload.id || '';
-    const nonce: string = payload.nonce || '';
+    const id: string = payload.id || EMPTY;
+    const nonce: string = payload.nonce || EMPTY;
     return {
         id: id.toLowerCase(),
         nonce: nonce
