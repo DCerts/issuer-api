@@ -95,13 +95,13 @@ class GroupRepository extends Repository<Group> {
     async findConfirmersByGroupId(groupId: number) {
         const query = this.getQuery('findConfirmersByGroupId');
         const result = await this.db?.all(query, [groupId]);
-        return result?.map(r => r['confirmer_id'] as string);
+        return result?.map((r: any) => r['confirmer_id'] as string);
     }
 
     async findMembersByGroupId(groupId: number) {
         const query = this.getQuery('findMembersByGroupId');
         const result = await this.db?.all(query, [groupId]);
-        return result?.map(r => r['member_id'] as string);
+        return result?.map((r: any) => r['member_id'] as string);
     }
 
     async create(group: Group) {

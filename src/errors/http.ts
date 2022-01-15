@@ -20,7 +20,7 @@ class Error {
         this.timestamp = +new Date();
         this.status = status;
         this.path = path;
-        this.code = code;
+        this.code = code || ErrorCode.UNKNOWN;
         this.message = message;
         this.props = props;
     }

@@ -1,12 +1,9 @@
 import fs from 'fs';
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
 import logger from './logger';
 import { Account } from '../models/account';
 import { EMPTY } from '../commons/str';
+import DB, { DatabaseType, Sqlite } from './sqlite';
 
-
-sqlite3.verbose();
 
 class SQLBuilder {
     private sql: string;
@@ -67,55 +64,32 @@ class SQL {
     }
 }
 
-/**
- * A wrapper for SQLite3's Database class.
- */
-class DB {
-    protected static INSTANCE: Database<sqlite3.Database, sqlite3.Statement>;
 
-    static async connect(file: string) {
-        if (!DB.INSTANCE) {
-            DB.INSTANCE = await open({
-                filename: file,
-                driver: sqlite3.Database
-            });
-        }
-        return DB.INSTANCE;
-    }
-
-    static async close() {
-        if (DB.INSTANCE) {
-            await DB.INSTANCE?.close();
-        }
-    }
+class Database {
+    private static INSTANCE: Sqlite | undefined;
 
     static get() {
-        return DB.INSTANCE;
+        return Database.INSTANCE;
     }
-}
 
-/**
- * Provides asynchronous methods for sqlite.
- */
-
- interface TransactionParam {
-    method: Function | undefined,
-    params?: any | any[],
-    throwable?: Error
+    static async connect(file: string) {
+        Database.INSTANCE = DB.get(DatabaseType.BETTER_SQLITE3);
+        await Database.INSTANCE?.connect(file);
+    }
 }
 
 class Transaction {
-    static async run(...methods: Function[]) {
-        const db = await DB.get();
+    static async run(...functions: Function[]) {
+        const db = Database.get();
         try {
-            await db.run('BEGIN');
-            for (const method of methods) {
-                await method();
+            await db?.begin();
+            for (const f of functions) {
+                await f();
             }
-            await db.run('COMMIT');
+            await db?.commit();
         } catch (err) {
-            logger.error(err);
-            await db.run('ROLLBACK');
+            await db?.rollback();
+            throw err;
         }
     }
 }
@@ -128,7 +102,7 @@ class Transaction {
 const createTables = async (...tables: string[]) => {
     for (const table of tables) {
         const sql = SQL.from(`create-table/${table}.sql`).build();
-        await DB.get().run(sql);
+        await Database.get()?.run(sql);
         logger.info(`Table ${table} created.`);
     }
 };
@@ -150,7 +124,7 @@ const createAccounts = async (...accounts: Account[]) => {
     const dir = 'insert-into/accounts/with-id-with-name-with-birthday-with-email-with-role';
     const sql = SQL.from(dir).build();
     for (const account of accounts) {
-        await DB.get().run(sql, [
+        await Database.get()?.run(sql, [
             account.id, account.name, account.birthday, account.email, account.role
         ]);
     }
@@ -167,7 +141,7 @@ const createSchoolAccounts = async () => {
  */
 const connect = async () => {
     SQL.withRootResource('./sql/');
-    await DB.connect('.db');
+    await Database.connect('.db');
 };
 
 enum SimpleSQLAction {
@@ -260,9 +234,9 @@ class SimpleSQLBuilder {
     }
 }
 
-export default DB;
+export default Database;
 export {
-    Transaction, TransactionParam,
+    Transaction,
     SQL,
     createAccounts, createSchoolAccounts,
     createTables, createAllTables, connect,

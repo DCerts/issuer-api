@@ -1,12 +1,11 @@
-import sqlite3 from 'sqlite3';
-import { Database } from 'sqlite';
 import DB, { connect } from '../utils/db';
 import logger from '../utils/logger';
 import { SPACE, EMPTY, NEWLINE_REGEX } from '../commons/str';
+import { Sqlite } from '../utils/sqlite';
 
 
 abstract class Repository<T> {
-    protected db: Database<sqlite3.Database, sqlite3.Statement> | undefined;
+    protected db: Sqlite | undefined;
     protected queries: Map<string, string>;
 
     protected constructor() {

@@ -40,7 +40,6 @@ const create = async (group: Group, accountId: string) => {
     }, async () => {
         const members = group.members || [];
         await GroupRepository.addMembers(group.id, ...members);
-        throw new BadRequestError(EMPTY);
     });
     // TODO: Send notification to other school account.
     // TODO: Send mail to notify group invitation.
