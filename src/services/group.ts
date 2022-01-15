@@ -1,11 +1,11 @@
 import { BadRequestError, NotFoundError } from '../errors/http';
-import { Account } from '../models/account';
 import { Group } from '../models/group';
 import GroupRepository from '../repos/group';
 import AccountRepository from '../repos/account';
 import { EMPTY } from '../commons/str';
 import { ErrorCode } from '../errors/code';
 import { Transaction } from '../utils/db';
+import { GROUP_AVAILABLE, THRESHOLD } from '../commons/setting';
 
 
 const findByGroupId = async (groupId: number) => {
@@ -50,8 +50,8 @@ const confirm = async (groupId: number, confirmerId: string) => {
     const confirmers = await GroupRepository.findConfirmersByGroupId(groupId);
     if (!confirmers || !confirmers.includes(confirmerId)) {
         await GroupRepository.confirm(groupId, confirmerId);
-        if (group.threshold <= (confirmers || []).length + 1) {
-            await GroupRepository.updateAvailability(groupId, true);
+        if (THRESHOLD <= (confirmers || []).length + 1) { // TODO: Change it!
+            await GroupRepository.updateAvailability(groupId, GROUP_AVAILABLE);
         }
     }
 };

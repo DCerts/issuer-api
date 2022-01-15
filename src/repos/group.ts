@@ -125,7 +125,7 @@ class GroupRepository extends Repository<Group> {
         }
     }
 
-    async updateAvailability(groupId: number, available: boolean) {
+    async updateAvailability(groupId: number, available: number) {
         const query = this.getQuery('updateAvailability');
         await this.db?.run(query, [available, groupId]);
     }
