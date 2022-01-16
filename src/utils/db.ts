@@ -131,7 +131,6 @@ const createTables = async (...tables: string[]) => {
     for (const table of tables) {
         const sql = SQL.from(`create-table/${table}.sql`).build();
         await Database.get()?.run(sql);
-        logger.info(`Table ${table} created.`);
     }
 };
 

@@ -23,9 +23,7 @@ abstract class Repository<T> {
     }
 
     protected getQuery(name: string): string {
-        const query = this.queries.get(name) || EMPTY;
-        logger.info(query.replace(NEWLINE_REGEX, SPACE));
-        return query;
+        return this.queries.get(name) || EMPTY;
     }
 
     protected abstract convertToEntity(result: any): T | null;
