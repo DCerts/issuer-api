@@ -5,11 +5,23 @@ import { EMPTY } from '../commons/str';
 import { ErrorCode } from '../errors/code';
 
 
+const findAll = async () => {
+    const accounts = await AccountRepository.findAll();
+    if (!accounts) {
+        throw new NotFoundError(EMPTY, ErrorCode.NOT_FOUND);
+    }
+    accounts.forEach(account => {
+        account.nonce = undefined;
+    });
+    return accounts;
+};
+
 const findById = async (id: string) => {
     const account = await AccountRepository.findById(id);
     if (!account) {
         throw new NotFoundError(EMPTY, ErrorCode.NOT_FOUND);
     }
+    account.nonce = undefined;
     return account;
 };
 
@@ -30,6 +42,7 @@ const updateById = async (id: string, account: Account) => {
 };
 
 export default {
+    findAll: findAll,
     findById: findById,
     create: create,
     updateById: updateById

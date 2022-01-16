@@ -10,10 +10,15 @@ const getAccountId = (req: Request) => {
     return getAccountFromRequest(req).id;
 };
 
+router.get('/all', async (req, res) => {
+    await authorizeSchool(req);
+    const accounts = await AccountService.findAll();
+    res.json(accounts);
+});
+
 router.get('/', async (req, res) => {
     const id = getAccountId(req);
     const account: Account = await AccountService.findById(id);
-    account.nonce = undefined; // nonce is hidden
     res.json(account);
 });
 

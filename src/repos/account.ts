@@ -23,6 +23,10 @@ class AccountRepository extends Repository<Account> {
 
     override async loadQueries() {
         this.addQuery(
+            'findAll',
+            SQL.from('select-from/accounts/all').build()
+        );
+        this.addQuery(
             'findById',
             SimpleSQLBuilder.new()
                 .select('accounts')
@@ -50,6 +54,12 @@ class AccountRepository extends Repository<Account> {
                 .with('nonce').by('id')
                 .build()
         );
+    }
+
+    async findAll() {
+        const query = this.getQuery('findAll');
+        const result = await this.db?.all(query);
+        return result?.map(this.convertToEntity) as Account[];
     }
 
     async findById(id: string) {

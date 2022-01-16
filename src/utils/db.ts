@@ -83,7 +83,7 @@ class Database {
 interface Statement {
     sql: string,
     params: any[]
-};
+}
 
 /**
  * Utilities for database transaction.
@@ -129,7 +129,7 @@ class Transaction {
  */
 const createTables = async (...tables: string[]) => {
     for (const table of tables) {
-        const sql = SQL.from(`create-table/${table}.sql`).build();
+        const sql = SQL.from(`create-table/${table}`).build();
         await Database.get()?.run(sql);
     }
 };
