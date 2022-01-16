@@ -34,8 +34,16 @@ const validateSignature = async (publicAddress: string, signature: string) => {
     });
 };
 
+const logout = async (publicAddress: string) => {
+    try {
+        await getNonce(publicAddress);
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 export default {
     getNonce: getNonce,
-    validateSignature: validateSignature
+    validateSignature: validateSignature,
+    logout: logout
 };

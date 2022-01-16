@@ -16,6 +16,12 @@ router.get('/:groupId', async (req, res) => {
     res.json(group);
 });
 
+router.get('/', async (req, res) => {
+    const accountId = getAccountId(req);
+    const groups = await GroupService.findGroupsByMemberId(accountId);
+    res.json(groups);
+});
+
 router.put('/:groupId', async (req, res) => {
     await authorizeSchool(req);
     const groupId: number = Number.parseInt(req.params.groupId);

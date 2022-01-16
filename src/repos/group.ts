@@ -50,6 +50,14 @@ class GroupRepository extends Repository<Group> {
                 .build()
         );
         this.addQuery(
+            'findGroupsByMemberId',
+            SimpleSQLBuilder.new()
+                .select('group-members')
+                .by('member-id')
+                .and('available')
+                .build()
+        );
+        this.addQuery(
             'create',
             SimpleSQLBuilder.new()
                 .insert('groups')
@@ -101,7 +109,13 @@ class GroupRepository extends Repository<Group> {
     async findMembersByGroupId(groupId: number) {
         const query = this.getQuery('findMembersByGroupId');
         const result = await this.db?.all(query, [groupId]);
-        return result?.map((r: any) => r['member_id'] as string);
+        return result?.map((r: any) => r['member_id'] as string) as string[];
+    }
+
+    async findGroupsByMemberId(memberId: string) {
+        const query = this.getQuery('findGroupsByMemberId');
+        const result = await this.db?.all(query, [memberId]);
+        return result?.map(this.convertToEntity) as Group[];
     }
 
     async create(group: Group) {

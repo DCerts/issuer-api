@@ -16,6 +16,10 @@ const findByGroupId = async (groupId: number) => {
     return group;
 };
 
+const findGroupsByMemberId = async (memberId: string) => {
+    return GroupRepository.findGroupsByMemberId(memberId);
+};
+
 const create = async (group: Group, accountId: string) => {
     const existed = await GroupRepository.findByGroupId(group.id);
     if (existed) {
@@ -58,6 +62,7 @@ const confirm = async (groupId: number, confirmerId: string) => {
 
 export default {
     findByGroupId: findByGroupId,
+    findGroupsByMemberId: findGroupsByMemberId,
     create: create,
     confirm: confirm
 };

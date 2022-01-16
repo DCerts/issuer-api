@@ -66,42 +66,41 @@ class BetterSqlite3 extends Sqlite {
         this.instance = betterSqlite3(file);
     }
 
-    async run(sql: string, ...params: any[]) {
+    private async prepare(sql: string) {
         logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        return this.instance?.prepare(sql);
+    }
+
+    async run(sql: string, ...params: any[]) {
+        const statement = await this.prepare(sql);
         return statement?.run(...params);
     }
 
     async get(sql: string, ...params: any[]) {
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        const statement = await this.prepare(sql);
         return statement?.get(...params);
     }
 
     async all(sql: string, ...params: any[]) {
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        const statement = await this.prepare(sql);
         return statement?.all(...params);
     }
 
     async begin() {
         const sql = 'BEGIN';
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        const statement = await this.prepare(sql);
         return statement?.run();
     }
 
     async commit() {
         const sql = 'COMMIT';
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        const statement = await this.prepare(sql);
         return statement?.run();
     }
 
     async rollback() {
         const sql = 'ROLLBACK';
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
-        const statement = await this.instance?.prepare(sql);
+        const statement = await this.prepare(sql);
         return statement?.run();
     }
 }
