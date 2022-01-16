@@ -27,10 +27,10 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 app.use('/auth', auth);
-app.use('/account', jwtFilter, account);
-app.use('/student', jwtFilter, student);
-app.use('/subject', jwtFilter, subject);
-app.use('/group', jwtFilter, group);
+app.use('/accounts', jwtFilter, account);
+app.use('/students', jwtFilter, student);
+app.use('/subjects', jwtFilter, subject);
+app.use('/groups', jwtFilter, group);
 app.use(pathNotFoundHandler);
 app.use(httpErrorHandler);
 
