@@ -40,6 +40,7 @@ class GroupRepository extends Repository<Group> {
             SimpleSQLBuilder.new()
                 .select('group-confirmers')
                 .by('group-id')
+                .and('confirmed')
                 .build()
         );
         this.addQuery(
@@ -68,7 +69,7 @@ class GroupRepository extends Repository<Group> {
             'confirm',
             SimpleSQLBuilder.new()
                 .insert('group-confirmers')
-                .with('group-id', 'confirmer-id')
+                .with('group-id', 'confirmer-id', 'confirmed')
                 .build()
         );
         this.addQuery(
@@ -123,9 +124,9 @@ class GroupRepository extends Repository<Group> {
         await this.db?.run(query, [group.id, group.name, group.threshold]);
     }
 
-    async confirm(groupId: number, confirmerId: string) {
+    async confirm(groupId: number, confirmerId: string, confirmed: number) {
         const query = this.getQuery('confirm');
-        await this.db?.run(query, [groupId, confirmerId]);
+        await this.db?.run(query, [groupId, confirmerId, confirmed]);
     }
 
     async addMember(groupId: number, memberId: string) {
