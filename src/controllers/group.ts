@@ -1,14 +1,10 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
 import { Group } from '../models/group';
 import GroupService from '../services/group';
-import { getAccountFromRequest, authorizeSchool } from '../utils/jwt';
+import { authorizeSchool, getAccountId } from '../utils/jwt';
 
 
 const router = Router();
-
-const getAccountId = (req: Request) => {
-    return getAccountFromRequest(req).id;
-};
 
 router.get('/:groupId', async (req, res) => {
     const groupId: number = Number.parseInt(req.params.groupId);
@@ -27,7 +23,7 @@ router.put('/:groupId', async (req, res) => {
     const groupId: number = Number.parseInt(req.params.groupId);
     const accountId = getAccountId(req);
     const group: Group = req.body;
-    if (group) {
+    if (group.threshold) {
         group.id = groupId;
         await GroupService.create(group, accountId);
         res.sendStatus(201);

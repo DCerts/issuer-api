@@ -9,7 +9,7 @@ class StudentRepository extends Repository<Student> {
         this.loadQueries();
     }
 
-    override convertToEntity(result: any): Student | null {
+    protected override convertToEntity(result: any): Student | null {
         if (!result) return null;
         return {
             id: result['student_id'],
@@ -19,7 +19,7 @@ class StudentRepository extends Repository<Student> {
         };
     }
 
-    override async loadQueries() {
+    protected override async loadQueries() {
         this.addQuery(
             'findById',
             SimpleSQLBuilder.new()

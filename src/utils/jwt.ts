@@ -113,11 +113,15 @@ const getAccountFromRequest = (req: Request): {
     return getAccountFromToken(token);
 };
 
+const getAccountId = (req: Request) => {
+    return getAccountFromRequest(req).id;
+};
+
 export {
     generateToken,
     verifyToken,
     randomizeText,
     jwtFilter,
     authorizeRole, authorizeSchool,
-    getAccountFromToken, getAccountFromRequest
+    getAccountFromToken, getAccountFromRequest, getAccountId
 };

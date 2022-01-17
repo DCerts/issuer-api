@@ -1,6 +1,7 @@
 import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Group } from '../models/group';
+import { GROUP_AVAILABLE } from '../commons/setting';
 
 
 class GroupRepository extends Repository<Group> {
@@ -9,17 +10,17 @@ class GroupRepository extends Repository<Group> {
         this.loadQueries();
     }
 
-    override convertToEntity(result: any): Group | null {
+    protected override convertToEntity(result: any): Group | null {
         if (!result) return null;
         return {
             id: result['group_id'],
             name: result['group_name'],
             threshold: result['threshold'],
-            available: result['available']
+            available: (result['available'] as number) == GROUP_AVAILABLE
         };
     }
 
-    override async loadQueries() {
+    protected override async loadQueries() {
         this.addQuery(
             'findByGroupId',
             SimpleSQLBuilder.new()

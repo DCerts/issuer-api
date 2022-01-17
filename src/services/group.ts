@@ -58,7 +58,7 @@ const confirm = async (groupId: number, confirmerId: string, confirmed: boolean)
             confirmerId,
             confirmed ? GROUP_CONFIRMED : GROUP_REJECTED
         );
-        if (THRESHOLD <= (confirmers || []).length + 1) {
+        if (confirmed && (THRESHOLD <= (confirmers || []).length + 1)) {
             await GroupRepository.updateAvailability(groupId, GROUP_AVAILABLE);
         }
     }

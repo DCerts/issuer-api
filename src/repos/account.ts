@@ -9,7 +9,7 @@ class AccountRepository extends Repository<Account> {
         this.loadQueries();
     }
 
-    override convertToEntity(result: any): Account | null {
+    protected override convertToEntity(result: any): Account | null {
         if (!result) return null;
         return {
             id: result['account_id'],
@@ -21,7 +21,7 @@ class AccountRepository extends Repository<Account> {
         };
     }
 
-    override async loadQueries() {
+    protected override async loadQueries() {
         this.addQuery(
             'findAll',
             SQL.from('select-from/accounts/all').build()

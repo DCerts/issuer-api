@@ -2,7 +2,7 @@ import sqlite from 'sqlite';
 import sqlite3 from 'sqlite3';
 import betterSqlite3 from 'better-sqlite3';
 import logger from './logger';
-import { NEWLINE_REGEX, SPACE } from '../commons/str';
+import { SQL } from './db';
 
 
 /**
@@ -67,7 +67,7 @@ class BetterSqlite3 extends Sqlite {
     }
 
     private async prepare(sql: string) {
-        logger.info(sql.replace(NEWLINE_REGEX, SPACE));
+        logger.info(SQL.flatten(sql));
         return this.instance?.prepare(sql);
     }
 

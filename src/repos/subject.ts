@@ -9,7 +9,7 @@ class SubjectRepository extends Repository<Subject> {
         this.loadQueries();
     }
 
-    override convertToEntity(result: any): Subject | null {
+    protected override convertToEntity(result: any): Subject | null {
         if (!result) return null;
         return {
             id: result['subject_id'],
@@ -18,7 +18,7 @@ class SubjectRepository extends Repository<Subject> {
         };
     }
 
-    override async loadQueries() {
+    protected override async loadQueries() {
         this.addQuery(
             'findById',
             SimpleSQLBuilder.new()

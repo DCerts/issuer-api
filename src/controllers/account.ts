@@ -1,14 +1,10 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
 import { Account } from '../models/account';
 import AccountService from '../services/account';
-import { authorizeSchool, getAccountFromRequest } from '../utils/jwt';
+import { authorizeSchool, getAccountId } from '../utils/jwt';
 
 
 const router = Router();
-
-const getAccountId = (req: Request) => {
-    return getAccountFromRequest(req).id;
-};
 
 router.get('/all', async (req, res) => {
     await authorizeSchool(req);

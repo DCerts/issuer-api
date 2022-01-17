@@ -1,7 +1,7 @@
 import fs from 'fs';
 import logger from './logger';
 import { Account } from '../models/account';
-import { EMPTY } from '../commons/str';
+import { EMPTY, NEWLINE_REGEX, SPACE, SPACES_REGEX, SQL_COMMENT_REGEX, TAB_OR_SPACES_REGEX } from '../commons/str';
 import DB, { DatabaseType, Sqlite } from './sqlite';
 
 
@@ -45,6 +45,18 @@ class SQL {
                 'utf8'
             )
         );
+    }
+
+    /**
+     * Flatten a sql to an in-line one.
+     * @param sql the sql
+     */
+    static flatten(sql: string) {
+        return sql
+            .replace(SQL_COMMENT_REGEX, EMPTY)
+            .replace(NEWLINE_REGEX, SPACE)
+            .replace(TAB_OR_SPACES_REGEX, SPACE)
+            .replace(SPACES_REGEX, SPACE);
     }
 
     /**
