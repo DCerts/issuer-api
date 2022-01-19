@@ -41,7 +41,7 @@ class GroupRepository extends Repository<Group> {
             SimpleSQLBuilder.new()
                 .select('group-confirmers')
                 .by('group-id')
-                .and('confirmed')
+                .and('confirmed', 'not-pending')
                 .build()
         );
         this.addQuery(
@@ -71,6 +71,14 @@ class GroupRepository extends Repository<Group> {
             SimpleSQLBuilder.new()
                 .insert('group-confirmers')
                 .with('group-id', 'confirmer-id', 'confirmed')
+                .build()
+        );
+        this.addQuery(
+            'updateConfirmation',
+            SimpleSQLBuilder.new()
+                .update('group-confirmers')
+                .with('pending')
+                .by('group-id', 'confirmer-id')
                 .build()
         );
         this.addQuery(
@@ -105,7 +113,7 @@ class GroupRepository extends Repository<Group> {
     async findConfirmersByGroupId(groupId: number) {
         const query = this.getQuery('findConfirmersByGroupId');
         const result = await this.db?.all(query, [groupId]);
-        return result?.map((r: any) => r['confirmer_id'] as string);
+        return result?.map((r: any) => r['confirmer_id'] as string) as string[];
     }
 
     async findMembersByGroupId(groupId: number) {
@@ -128,6 +136,11 @@ class GroupRepository extends Repository<Group> {
     async confirm(groupId: number, confirmerId: string, confirmed: number) {
         const query = this.getQuery('confirm');
         await this.db?.run(query, [groupId, confirmerId, confirmed]);
+    }
+
+    async updateConfirmation(groupId: number, confirmerId: string, confirmation: number) {
+        const query = this.getQuery('updateConfirmation');
+        await this.db?.run(query, [confirmation, groupId, confirmerId]);
     }
 
     async addMember(groupId: number, memberId: string) {

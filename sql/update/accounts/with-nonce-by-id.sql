@@ -1,3 +1,3 @@
 update accounts
 set nonce = ?
-where account_id = ?;
+where account_id = lower(?);

@@ -81,12 +81,20 @@ class SQL {
  */
 class Database {
     private static INSTANCE: Sqlite | undefined;
+    private static FILE: string | undefined;
 
     static get() {
         return Database.INSTANCE;
     }
 
+    static async getNewInstance() {
+        const instance = DB.get(DatabaseType.BETTER_SQLITE3);
+        if (Database.FILE) await instance?.connect(Database.FILE);
+        return instance;
+    }
+
     static async connect(file: string) {
+        Database.FILE = file;
         Database.INSTANCE = DB.get(DatabaseType.BETTER_SQLITE3);
         await Database.INSTANCE?.connect(file);
     }
@@ -106,7 +114,7 @@ class Transaction {
      * @param actions the asynchronous actions
      */
     static async for(...actions: Function[]) {
-        const db = Database.get();
+        const db = await Database.getNewInstance();
         try {
             await db?.begin();
             for (const action of actions) {
@@ -120,7 +128,7 @@ class Transaction {
     }
 
     static async run(...statements: Statement[]) {
-        const db = Database.get();
+        const db = await Database.getNewInstance();
         try {
             await db?.begin();
             for (const statement of statements) {

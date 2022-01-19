@@ -8,6 +8,7 @@ import student from './controllers/student';
 import subject from './controllers/subject';
 import group from './controllers/group';
 import news from './controllers/news';
+import test from './controllers/test';
 import { jwtFilter } from './utils/jwt';
 import { httpErrorHandler, pathNotFoundHandler } from './errors/handler';
 import logger from './utils/logger';
@@ -33,6 +34,7 @@ app.use('/students', jwtFilter, student);
 app.use('/subjects', jwtFilter, subject);
 app.use('/groups', jwtFilter, group);
 app.use('/news', jwtFilter, news);
+app.use('/test', test);
 app.use(pathNotFoundHandler);
 app.use(httpErrorHandler);
 

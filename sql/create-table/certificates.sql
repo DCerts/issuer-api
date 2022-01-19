@@ -1,6 +1,6 @@
 create table if not exists certificates (
     certificate_id integer primary key,
-    batch_id integer not null default 0,
+    batch_id integer not null,
     student_id text not null,
     subject_id text not null,
     semester text not null,

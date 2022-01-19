@@ -1,3 +1,3 @@
 select *
 from group_members
-where member_id = ?;
+where member_id = lower(?);

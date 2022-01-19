@@ -1,3 +1,3 @@
 select *
 from group_confirmers
-where confirmer_id = ?;
+where confirmer_id = lower(?);

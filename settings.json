@@ -2,23 +2,16 @@
     "threshold": 2,
     "accounts": [
         {
-            "id": "0xe52e8de016591302d9be0fbd93ea7e4b21a910b8",
+            "id": "0x2b84d3031a117312b99b429e7904cd7ecbae40a3",
             "name": "Admin 1",
             "email": "admin1@tuanm.dev",
             "birthday": "01/01/1970",
             "role": 0
         },
         {
-            "id": "0xbad35b0833094dd410781585a7f5321654816ab9",
+            "id": "0xe52e8de016591302d9be0fbd93ea7e4b21a910b8",
             "name": "Admin 2",
             "email": "admin2@tuanm.dev",
-            "birthday": "01/01/1970",
-            "role": 0
-        },
-        {
-            "id": "0x5248f7fe2254a2dd6aebad5d11b4860e06c2aeaf",
-            "name": "Admin 3",
-            "email": "admin3@tuanm.dev",
             "birthday": "01/01/1970",
             "role": 0
         }

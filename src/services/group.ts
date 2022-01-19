@@ -5,7 +5,7 @@ import AccountRepository from '../repos/account';
 import { EMPTY } from '../commons/str';
 import { ErrorCode } from '../errors/code';
 import { Transaction } from '../utils/db';
-import { GROUP_AVAILABLE, GROUP_CONFIRMED, GROUP_REJECTED, THRESHOLD } from '../commons/setting';
+import { GROUP_CONFIRMED, GROUP_REJECTED } from '../commons/setting';
 
 
 const findByGroupId = async (groupId: number) => {
@@ -39,9 +39,9 @@ const create = async (group: Group, accountId: string) => {
     }
     await Transaction.for(async () => {
         await GroupRepository.create(group);
-        await GroupRepository.confirm(group.id, accountId, GROUP_CONFIRMED);
         const members = group.members || [];
         await GroupRepository.addMembers(group.id, ...members);
+        await confirm(group.id, accountId, true);
     });
     // TODO: Send notification to other school account.
     // TODO: Send mail to notify group invitation.
@@ -58,9 +58,6 @@ const confirm = async (groupId: number, confirmerId: string, confirmed: boolean)
             confirmerId,
             confirmed ? GROUP_CONFIRMED : GROUP_REJECTED
         );
-        if (confirmed && (THRESHOLD <= (confirmers || []).length + 1)) {
-            await GroupRepository.updateAvailability(groupId, GROUP_AVAILABLE);
-        }
     }
 };
 
