@@ -289,7 +289,9 @@ export default Database;
 export {
     Transaction,
     SQL,
+    SimpleSQLBuilder
+};
+export const DatabaseUtils = {
     createAccounts, createSchoolAccounts,
     createTables, createAllTables, connect,
-    SimpleSQLBuilder
 };

@@ -1,15 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from '../utils/logger';
 import { ErrorCode } from './code';
-import { Error, NotFoundError } from './http';
+import { BadRequestError, Error, NotFoundError } from './http';
 
 
 /**
  * Handles errors for HTTP requests.
  */
-const httpErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    err.path = req.originalUrl;
-    logger.error(err.beautify());
+const httpErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof Error) {
+        err.path = req.originalUrl;
+        logger.error(err.beautify());
+    }
+    else {
+        logger.error(err.message);
+        err = new BadRequestError(req.originalUrl, ErrorCode.INTERNAL_SERVER_ERROR);
+    }
     return res.status(err.status).json(err);
 };
 

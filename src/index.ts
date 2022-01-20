@@ -1,7 +1,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createAllTables, connect, createSchoolAccounts } from './utils/db';
+import { DatabaseUtils } from './utils/db';
+import { KafkaUtils } from './utils/kafka';
 import auth from './controllers/auth';
 import account from './controllers/account';
 import student from './controllers/student';
@@ -18,11 +19,10 @@ dotenv.config();
 
 // Connect to the database then create tables if not exists.
 (async () => {
-    await connect();
-    await createAllTables();
-    await createSchoolAccounts();
+    await DatabaseUtils.connect();
+    await DatabaseUtils.createAllTables();
+    await DatabaseUtils.createSchoolAccounts();
 })();
-
 
 const app: Express = express();
 

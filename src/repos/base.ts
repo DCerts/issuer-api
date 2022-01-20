@@ -1,4 +1,4 @@
-import DB, { connect } from '../utils/db';
+import DB, { DatabaseUtils } from '../utils/db';
 import logger from '../utils/logger';
 import { SPACE, EMPTY, NEWLINE_REGEX } from '../commons/str';
 import { Sqlite } from '../utils/sqlite';
@@ -14,7 +14,7 @@ abstract class Repository<T> {
     }
 
     private async init() {
-        await connect();
+        await DatabaseUtils.connect();
         this.db = DB.get();
     }
 
