@@ -37,15 +37,15 @@ const listenEvents = async () => {
     const contract = await getContract();
     contract.events.allEvents({
         fromBlock: 0
-    }, async (err: any, e: EventData) => {
+    }, (err: any, e: EventData) => {
         if (err) logger.error(err);
         else if (e) {
             logger.info(`${e.event} ${JSON.stringify(e.returnValues, null, 2)}`);
-            await processGroupEvents(e);
+            processGroupEvents(e);
 
             // processing other events...
 
-            await processWalletActivated(e);
+            processWalletActivated(e);
         }
     }).on('connected', (id: any) => {
         logger.info(`Listening to all events from subscription ${id}.`);

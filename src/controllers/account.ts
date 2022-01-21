@@ -12,6 +12,12 @@ router.get('/all', async (req, res) => {
     res.json(accounts);
 });
 
+router.get('/:accountId', async (req, res) => {
+    const accountId = req.params.accountId;
+    const account: Account = await AccountService.findBasicInfoById(accountId);
+    res.json(account);
+});
+
 router.get('/', async (req, res) => {
     const id = JwtUtils.getAccountId(req);
     const account: Account = await AccountService.findById(id);

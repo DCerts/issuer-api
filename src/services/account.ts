@@ -25,6 +25,16 @@ const findById = async (id: string) => {
     return account;
 };
 
+const findBasicInfoById = async (id: string) => {
+    const account = await AccountRepository.findById(id);
+    if (!account) {
+        throw new NotFoundError(EMPTY, ErrorCode.NOT_FOUND);
+    }
+    account.birthday = undefined;
+    account.nonce = undefined;
+    return account;
+};
+
 const create = async (account: Account) => {
     const existed = await AccountRepository.findById(account.id);
     if (existed) {
@@ -42,8 +52,9 @@ const updateById = async (id: string, account: Account) => {
 };
 
 export default {
-    findAll: findAll,
-    findById: findById,
-    create: create,
-    updateById: updateById
+    findAll,
+    findById,
+    findBasicInfoById,
+    create,
+    updateById
 };
