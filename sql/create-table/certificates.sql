@@ -10,7 +10,7 @@ create table if not exists certificates (
     -- foreign key (batch_id) references batches(batch_id),
     -- foreign key (student_id) references students(student_id),
     -- foreign key (subject_id) references subjects(subject_id),
-    created_at timestamp default current_timestamp,
+    created_at timestamp,
     updated_at timestamp default current_timestamp,
     deleted_at timestamp,
     deleted boolean default false

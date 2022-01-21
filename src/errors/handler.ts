@@ -27,7 +27,7 @@ const pathNotFoundHandler = (req: Request, res: Response, next: NextFunction) =>
     return res.status(err.status).json(err);
 };
 
-export {
+export const ErrorHandlers = {
     httpErrorHandler,
     pathNotFoundHandler
 };

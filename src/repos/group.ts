@@ -16,6 +16,7 @@ class GroupRepository extends Repository<Group> {
             id: result['group_id'],
             name: result['group_name'],
             threshold: result['threshold'],
+            creator: result['creator_id'],
             available: (result['available'] as number) == GROUP_AVAILABLE
         };
     }
@@ -63,7 +64,7 @@ class GroupRepository extends Repository<Group> {
             'create',
             SimpleSQLBuilder.new()
                 .insert('groups')
-                .with('id', 'name', 'threshold')
+                .with('id', 'name', 'threshold', 'creator')
                 .build()
         );
         this.addQuery(
@@ -130,7 +131,7 @@ class GroupRepository extends Repository<Group> {
 
     async create(group: Group) {
         const query = this.getQuery('create');
-        await this.db?.run(query, [group.id, group.name, group.threshold]);
+        await this.db?.run(query, [group.id, group.name, group.threshold, group.creator]);
     }
 
     async confirm(groupId: number, confirmerId: string, confirmed: number) {

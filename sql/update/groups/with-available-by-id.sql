@@ -1,3 +1,3 @@
 update groups
-set available = ?
+set available = ?, updated_at = current_timestamp
 where group_id = ?;

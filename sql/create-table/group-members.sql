@@ -4,7 +4,7 @@ create table if not exists group_members (
     -- foreign key (group_id) references groups(group_id),
     -- foreign key (member_id) references accounts(account_id),
     -- primary key (group_id, account_id),
-    created_at timestamp default current_timestamp,
+    created_at timestamp,
     updated_at timestamp default current_timestamp,
     deleted_at timestamp,
     deleted boolean default false

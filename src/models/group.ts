@@ -2,7 +2,8 @@ interface Group {
     id: number,
     name: string,
     threshold: number,
-    available: boolean,
+    creator: string,
+    available?: boolean,
     members?: string[]
 }
 

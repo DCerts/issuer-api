@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Group } from '../models/group';
 import GroupService from '../services/group';
-import { authorizeSchool, getAccountId } from '../utils/jwt';
+import { JwtUtils } from '../utils/jwt';
 
 
 const router = Router();
@@ -13,15 +13,15 @@ router.get('/:groupId', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-    const accountId = getAccountId(req);
+    const accountId = JwtUtils.getAccountId(req);
     const groups = await GroupService.findGroupsByMemberId(accountId);
     res.json(groups);
 });
 
 router.put('/:groupId', async (req, res) => {
-    await authorizeSchool(req);
+    await JwtUtils.authorizeSchool(req);
     const groupId: number = Number.parseInt(req.params.groupId);
-    const accountId = getAccountId(req);
+    const accountId = JwtUtils.getAccountId(req);
     const group: Group = req.body;
     if (group.threshold) {
         group.id = groupId;
@@ -35,9 +35,9 @@ router.put('/:groupId', async (req, res) => {
 });
 
 router.delete('/:groupId', async (req, res) => {
-    await authorizeSchool(req);
+    await JwtUtils.authorizeSchool(req);
     const groupId: number = Number.parseInt(req.params.groupId);
-    const accountId = getAccountId(req);
+    const accountId = JwtUtils.getAccountId(req);
     await GroupService.confirm(groupId, accountId, false);
     res.sendStatus(200);
 });

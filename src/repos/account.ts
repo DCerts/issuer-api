@@ -1,6 +1,6 @@
 import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
-import { Account } from '../models/account';
+import { Account, Role } from '../models/account';
 
 
 class AccountRepository extends Repository<Account> {
@@ -41,6 +41,13 @@ class AccountRepository extends Repository<Account> {
                 .build()
         );
         this.addQuery(
+            'createAdmin',
+            SimpleSQLBuilder.new()
+                .insert('accounts')
+                .with('id', 'name', 'birthday', 'email', 'role')
+                .build()
+        );
+        this.addQuery(
             'updateById',
             SimpleSQLBuilder.new()
                 .update('accounts')
@@ -72,6 +79,13 @@ class AccountRepository extends Repository<Account> {
         const query = this.getQuery('create');
         await this.db?.run(query, [
             account.id, account.name, account.birthday, account.email
+        ]);
+    }
+
+    async createAdmin(account: Account) {
+        const query = this.getQuery('createAdmin');
+        await this.db?.run(query, [
+            account.id, account.name, account.birthday, account.email, Role.SCHOOL
         ]);
     }
 

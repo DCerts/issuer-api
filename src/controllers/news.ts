@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { authorizeSchool, getAccountId } from '../utils/jwt';
+import { JwtUtils } from '../utils/jwt';
 import NewsService from '../services/news';
 
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-    await authorizeSchool(req);
-    const accountId = getAccountId(req);
+    await JwtUtils.authorizeSchool(req);
+    const accountId = JwtUtils.getAccountId(req);
     const news = await NewsService.findNewsByAccountId(accountId);
     res.json(news);
 });

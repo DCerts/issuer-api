@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Student } from '../models/student';
 import StudentService from '../services/student';
-import { authorizeSchool } from '../utils/jwt';
+import { JwtUtils } from '../utils/jwt';
 
 
 const router = Router();
@@ -13,7 +13,7 @@ router.get('/:id', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-    await authorizeSchool(req);
+    await JwtUtils.authorizeSchool(req);
     const id = req.params.id;
     const student: Student = req.body;
     student.id = id;

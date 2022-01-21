@@ -117,7 +117,7 @@ const getAccountId = (req: Request) => {
     return getAccountFromRequest(req).id;
 };
 
-export {
+export const JwtUtils = {
     generateToken,
     verifyToken,
     randomizeText,

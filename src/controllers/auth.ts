@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import AuthService from '../services/auth';
-import { getAccountId } from '../utils/jwt';
+import { JwtUtils } from '../utils/jwt';
 
 
 const router = Router();
@@ -19,7 +19,7 @@ router.post('/:publicAddress', async (req, res) => {
 });
 
 router.delete('/', async (req, res) => {
-    const id = getAccountId(req);
+    const id = JwtUtils.getAccountId(req);
     await AuthService.logout(id);
     res.sendStatus(200);
 });

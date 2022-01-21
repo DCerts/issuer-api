@@ -1,9 +1,9 @@
 interface Account {
     id: string,
     role?: Role,
-    name: string,
+    name?: string,
     birthday?: string,
-    email: string,
+    email?: string,
     nonce?: string
 }
 

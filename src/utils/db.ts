@@ -123,7 +123,7 @@ class Transaction {
             await db?.commit();
         } catch (err) {
             await db?.rollback();
-            throw err;
+            logger.error(err);
         }
     }
 
@@ -137,7 +137,7 @@ class Transaction {
             await db?.commit();
         } catch (err) {
             await db?.rollback();
-            throw err;
+            logger.error(err);
         }
     }
 }
@@ -165,26 +165,6 @@ const createAllTables = async () => {
         }
     }
     await createTables(...tables);
-};
-
-const createAccounts = async (...accounts: Account[]) => {
-    const dir = 'insert-into/accounts/with-id-with-name-with-birthday-with-email-with-role';
-    const sql = SQL.from(dir).build();
-    for (const account of accounts) {
-        try {
-            await Database.get()?.run(sql, [
-                account.id, account.name, account.birthday, account.email, account.role
-            ]);
-        } catch (err) {
-            logger.error(err);
-        }
-    }
-};
-
-const createSchoolAccounts = async () => {
-    const settings = JSON.parse(fs.readFileSync('settings.json', 'utf8'));
-    const accounts: Account[] = settings.accounts || [];
-    await createAccounts(...accounts);
 };
 
 /**
@@ -292,6 +272,5 @@ export {
     SimpleSQLBuilder
 };
 export const DatabaseUtils = {
-    createAccounts, createSchoolAccounts,
     createTables, createAllTables, connect,
 };
