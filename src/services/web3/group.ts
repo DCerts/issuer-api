@@ -1,13 +1,13 @@
 import { EventData } from 'web3-eth-contract';
 import { Transaction } from '../../utils/db';
 import GroupRepository from '../../repos/group';
-import { CONFIRMATION_NOT_PENDING, GROUP_AVAILABLE } from '../../commons/setting';
+import { NOT_PENDING, AVAILABLE } from '../../commons/setting';
 
 
 const processGroupAdded = async (event: EventData) => {
     const groupId = Number.parseInt(event.returnValues.groupId as string);
     await Transaction.for(async () => {
-        await GroupRepository.updateAvailability(groupId, GROUP_AVAILABLE);
+        await GroupRepository.updateAvailability(groupId, AVAILABLE);
     });
 };
 
@@ -35,7 +35,7 @@ const processGroupConfirmed = async (event: EventData) => {
         await GroupRepository.updateConfirmation(
             groupId,
             confirmerId,
-            CONFIRMATION_NOT_PENDING
+            NOT_PENDING
         );
     });
 };

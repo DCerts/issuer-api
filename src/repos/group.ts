@@ -1,7 +1,7 @@
 import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Group } from '../models/group';
-import { GROUP_AVAILABLE } from '../commons/setting';
+import { AVAILABLE } from '../commons/setting';
 
 
 class GroupRepository extends Repository<Group> {
@@ -17,7 +17,7 @@ class GroupRepository extends Repository<Group> {
             name: result['group_name'],
             threshold: result['threshold'],
             creator: result['creator_id'],
-            available: (result['available'] as number) == GROUP_AVAILABLE
+            available: (result['available'] as number) == AVAILABLE
         };
     }
 

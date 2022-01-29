@@ -1,13 +1,17 @@
 interface Certificate {
-    id: number,
-    student: string,
-    subject: string,
-    semester: string,
-    grade: string,
-    gradeType: string,
-    batch: number,
-    issued?: boolean,
-    issuers?: string[]
+    id: number;
+    batchId: number;
+    regNo: string;
+    conferredOn: string;
+    dateOfBirth?: string;
+    yearOfGraduation?: string;
+    majorIn?: string;
+    degreeOf?: string;
+    degreeClassification?: string;
+    modeOfStudy?: string;
+    createdIn?: string;
+    createdAt?: number;
+    issued?: boolean;
 }
 
 export {

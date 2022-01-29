@@ -5,7 +5,7 @@ import AccountRepository from '../repos/account';
 import { EMPTY } from '../commons/str';
 import { ErrorCode } from '../errors/code';
 import { Transaction } from '../utils/db';
-import { GROUP_CONFIRMED, GROUP_REJECTED } from '../commons/setting';
+import { CONFIRMED, REJECTED } from '../commons/setting';
 
 
 const findByGroupId = async (groupId: number) => {
@@ -41,10 +41,12 @@ const create = async (group: Group, accountId: string) => {
         await GroupRepository.create(group);
         const members = group.members || [];
         await GroupRepository.addMembers(group.id, ...members);
-        await confirm(group.id, accountId, true);
+        await GroupRepository.confirm(
+            group.id,
+            accountId,
+            CONFIRMED
+        );
     });
-    // TODO: Send notification to other school account.
-    // TODO: Send mail to notify group invitation.
 };
 
 const confirm = async (groupId: number, confirmerId: string, confirmed: boolean) => {
@@ -56,7 +58,7 @@ const confirm = async (groupId: number, confirmerId: string, confirmed: boolean)
         await GroupRepository.confirm(
             groupId,
             confirmerId,
-            confirmed ? GROUP_CONFIRMED : GROUP_REJECTED
+            confirmed ? CONFIRMED : REJECTED
         );
     }
 };

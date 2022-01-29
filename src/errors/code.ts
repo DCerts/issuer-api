@@ -15,7 +15,10 @@ enum ErrorCode {
     GROUP_ALREADY_AVAILABLE = 'group_already_available',
     ACCOUNT_NOT_FOUND = 'account_not_found',
     MEMBER_MISSING = 'member_missing',
-    THRESHOLD_INVALID = 'threshold_invalid'
+    THRESHOLD_INVALID = 'threshold_invalid',
+    BATCH_NOT_FOUND = 'batch_not_found',
+    BATCH_ALREADY_ISSUED = 'batch_already_issued',
+    CERTIFICATE_MISSING = 'certificate_missing'
 }
 
 export {

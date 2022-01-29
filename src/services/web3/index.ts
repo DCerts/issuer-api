@@ -1,9 +1,14 @@
 import { EventData } from 'web3-eth-contract';
-import { EVENT_GROUP_ADDED, EVENT_GROUP_CONFIRMED, EVENT_GROUP_PENDING, EVENT_WALLET_ACTIVATED } from '../../commons/contract';
+import {
+    EVENT_WALLET_ACTIVATED,
+    EVENT_GROUP_ADDED, EVENT_GROUP_CONFIRMED, EVENT_GROUP_PENDING,
+    EVENT_BATCH_ADDED, EVENT_BATCH_CONFIRMED, EVENT_BATCH_PENDING
+} from '../../commons/contract';
 import { getContract } from '../../utils/eth';
 import logger from '../../utils/logger';
 import Web3AccountService from './account';
 import Web3GroupService from './group';
+import Web3BatchService from './batch';
 
 
 const getEventsByName = async (eventName: string) => {
@@ -33,6 +38,18 @@ const processGroupEvents = async (e: EventData) => {
     }
 };
 
+const processBatchEvents = async (e: EventData) => {
+    if (e.event === EVENT_BATCH_CONFIRMED) {
+        return Web3BatchService.processBatchConfirmed(e);
+    }
+    if (e.event === EVENT_BATCH_PENDING) {
+        return Web3BatchService.processBatchPending(e);
+    }
+    if (e.event === EVENT_BATCH_ADDED) {
+        return Web3BatchService.processBatchAdded(e);
+    }
+};
+
 const listenEvents = async () => {
     const contract = await getContract();
     contract.events.allEvents({
@@ -41,6 +58,7 @@ const listenEvents = async () => {
         if (err) logger.error(err);
         else if (e) {
             logger.info(`${e.event} ${JSON.stringify(e.returnValues, null, 2)}`);
+            processBatchEvents(e);
             processGroupEvents(e);
 
             // processing other events...
