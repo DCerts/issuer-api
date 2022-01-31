@@ -4,6 +4,7 @@ import { NotFoundError, UnauthorizedError } from '../errors/http';
 import AccountRepository from '../repos/account';
 import { isSignatureValid } from '../utils/eth';
 import { JwtUtils } from '../utils/jwt';
+import logger from '../utils/logger';
 
 
 const NONCE_MAX_LENGTH = 16;
@@ -38,7 +39,7 @@ const logout = async (publicAddress: string) => {
     try {
         await getNonce(publicAddress);
     } catch (err) {
-        console.log(err);
+        logger.error(err);
     }
 };
 

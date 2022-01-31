@@ -1,8 +1,8 @@
 import { Certificate } from './certificate';
 
 interface Batch {
-    id: number;
-    name: string;
+    regNo: string;
+    onChainId?: number;
     group: number;
     creator: string;
     issued?: boolean;

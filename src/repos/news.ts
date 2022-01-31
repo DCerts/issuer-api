@@ -19,16 +19,29 @@ class NewsRepository<T> extends Repository<NewsDatum<T>> {
 
     protected override async loadQueries() {
         this.addQuery(
-            'findByAccountId',
+            'findGroupCreatedNewsByAccountId',
             SimpleSQLBuilder.new()
-                .select('news')
+                .select('news/group-created')
+                .by('account-id')
+                .build()
+        );
+        this.addQuery(
+            'findBatchCreatedNewsByAccountId',
+            SimpleSQLBuilder.new()
+                .select('news/batch-created')
                 .by('account-id')
                 .build()
         );
     }
 
-    async findByAccountId(accountId: string) {
-        const query = this.getQuery('findByAccountId');
+    async findGroupCreatedNewsByAccountId(accountId: string) {
+        const query = this.getQuery('findGroupCreatedNewsByAccountId');
+        const result = await this.db?.all(query, [accountId]);
+        return result?.map(this.convertToEntity) as NewsDatum<T>[];
+    }
+
+    async findBatchCreatedNewsByAccountId(accountId: string) {
+        const query = this.getQuery('findBatchCreatedNewsByAccountId');
         const result = await this.db?.all(query, [accountId]);
         return result?.map(this.convertToEntity) as NewsDatum<T>[];
     }

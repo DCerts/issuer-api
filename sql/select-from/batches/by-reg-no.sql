@@ -1,3 +1,3 @@
 select *
 from batches
-where batch_id = ?;
+where reg_no = ?;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Web3Service from '../services/web3';
-import { KafkaUtils } from '../utils/kafka';
+import TestService from '../services/test';
 
 
 const router = Router();
@@ -11,12 +11,10 @@ router.get('/events/:eventName', async (req, res) => {
     res.json(result);
 });
 
-router.post('/messages/:topic', async (req, res) => {
-    const topic = req.params.topic;
-    res.json(await KafkaUtils.sendMessages(
-        topic,
-        req.body
-    ));
+router.get('/auth/:publicAddress', async (req, res) => {
+    const publicAddress = req.params.publicAddress;
+    const token = await TestService.generateToken(publicAddress);
+    res.json(token);
 });
 
 export default router;

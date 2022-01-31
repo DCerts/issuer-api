@@ -1,6 +1,6 @@
 create table if not exists batches (
-    batch_id integer primary key,
-    batch_name text not null,
+    reg_no text primary key,
+    on_chain_id integer,
     group_id integer not null,
     creator_id text not null,
     issued boolean default false,

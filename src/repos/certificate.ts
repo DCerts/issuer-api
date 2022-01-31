@@ -13,9 +13,9 @@ class CertificateRepository<T> extends Repository<Certificate> {
     protected override convertToEntity(result: any): Certificate | null {
         if (!result) return null;
         return {
-            id: result['certificate_id'],
-            batchId: result['batch_id'],
             regNo: result['reg_no'],
+            onChainId: result['on_chain_id'],
+            batchRegNo: result['batch_reg_no'],
             conferredOn: result['conferred_on'],
             dateOfBirth: result['date_of_birth'],
             yearOfGraduation: result['year_of_graduation'],
@@ -31,17 +31,17 @@ class CertificateRepository<T> extends Repository<Certificate> {
 
     protected override async loadQueries() {
         this.addQuery(
-            'findById',
+            'findByOnChainId',
             SimpleSQLBuilder.new()
                 .select('certificates')
-                .by('id')
+                .by('on-chain-id')
                 .build()
         );
         this.addQuery(
-            'findByBatchId',
+            'findByBatchRegNo',
             SimpleSQLBuilder.new()
                 .select('certificates')
-                .by('batch-id')
+                .by('batch-reg-no')
                 .build()
         );
         this.addQuery(
@@ -58,18 +58,20 @@ class CertificateRepository<T> extends Repository<Certificate> {
                 .with('all')
                 .build()
         );
+        this.addQuery(
+            'updateOnChainIdByRegNo',
+            SimpleSQLBuilder.new()
+                .update('certificates')
+                .with('on-chain-id')
+                .by('reg-no')
+                .build()
+        );
     }
 
-    async findById(id: number) {
-        const query = this.getQuery('findById');
-        const result = await this.db?.get(query, [id]);
+    async findByOnChainId(onChainId: number) {
+        const query = this.getQuery('findByOnChainId');
+        const result = await this.db?.get(query, [onChainId]);
         return this.convertToEntity(result);
-    }
-
-    async findByBatchId(batchId: number) {
-        const query = this.getQuery('findByBatchId');
-        const result = await this.db?.all(query, [batchId]);
-        return result?.map(this.convertToEntity) as Certificate[];
     }
 
     async findByRegNo(regNo: string) {
@@ -78,12 +80,18 @@ class CertificateRepository<T> extends Repository<Certificate> {
         return result?.map(this.convertToEntity) as Certificate[];
     }
 
+    async findByBatchRegNo(batchRegNo: string) {
+        const query = this.getQuery('findByBatchId');
+        const result = await this.db?.all(query, [batchRegNo]);
+        return result?.map(this.convertToEntity) as Certificate[];
+    }
+
     async create(certificate: Certificate) {
         const query = this.getQuery('create');
         await this.db?.all(query, [
-            certificate.id,
-            certificate.batchId,
             certificate.regNo,
+            certificate.batchRegNo,
+            certificate.onChainId,
             certificate.conferredOn,
             certificate.dateOfBirth,
             certificate.yearOfGraduation,
@@ -93,6 +101,11 @@ class CertificateRepository<T> extends Repository<Certificate> {
             certificate.modeOfStudy,
             certificate.createdIn
         ]);
+    }
+
+    async updateOnChainIdByRegNo(regNo: string, onChainId: number) {
+        const query = this.getQuery('updateOnChainIdByRegNo');
+        await this.db?.all(query, [onChainId, regNo]);
     }
 }
 

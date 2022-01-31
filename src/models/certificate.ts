@@ -1,7 +1,7 @@
 interface Certificate {
-    id: number;
-    batchId: number;
     regNo: string;
+    onChainId?: number;
+    batchRegNo: string;
     conferredOn: string;
     dateOfBirth?: string;
     yearOfGraduation?: string;

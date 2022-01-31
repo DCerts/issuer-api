@@ -1,7 +1,7 @@
 insert into certificates (
-    certificate_id,
-    batch_id,
     reg_no,
+    batch_reg_no,
+    on_chain_id,
     conferred_on,
     date_of_birth,
     year_of_graduation,
