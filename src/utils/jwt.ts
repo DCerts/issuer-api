@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import AccountRepository from '../repos/account';
+import GroupRepository from '../repos/group';
 import { UnauthorizedError } from '../errors/http';
 import { ErrorCode } from '../errors/code';
 import { Role } from '../models/account';
@@ -79,9 +80,17 @@ const jwtFilter = async (req: Request, res: Response, next: NextFunction) => {
  * @param role the permission role
  */
 const authorizeRole = async (req: Request, role: Role) => {
-    const accountId = getAccountFromRequest(req).id;
+    const accountId = getAccountId(req);
     const account = await AccountRepository.findById(accountId);
     if (!account || account.role !== role) {
+        throw new UnauthorizedError(req.originalUrl, ErrorCode.UNAUTHORIZED);
+    }
+};
+
+const authorizeGroup = async (req: Request, groupId: number) => {
+    const accountId = getAccountId(req);
+    const memberIds = await GroupRepository.findMembersByGroupId(groupId);
+    if (!memberIds || !memberIds.some(memberId => memberId === accountId)) {
         throw new UnauthorizedError(req.originalUrl, ErrorCode.UNAUTHORIZED);
     }
 };
@@ -122,6 +131,6 @@ export const JwtUtils = {
     verifyToken,
     randomizeText,
     jwtFilter,
-    authorizeRole, authorizeSchool,
+    authorizeRole, authorizeSchool, authorizeGroup,
     getAccountFromToken, getAccountFromRequest, getAccountId
 };

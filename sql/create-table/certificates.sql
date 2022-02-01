@@ -1,7 +1,8 @@
 create table if not exists certificates (
     reg_no text primary key,
+    group_id integer not null,
     on_chain_id integer,
-    batch_reg_no integer not null,
+    batch_reg_no integer,
     conferred_on text not null,
     date_of_birth text,
     year_of_graduation integer,
@@ -9,6 +10,7 @@ create table if not exists certificates (
     degree_of text,
     degree_classification text,
     mode_of_study text,
+    -- foreign key (group_id) references groups(group_id),
     -- foreign key (batch_reg_no) references batches(reg_no),
     created_in text,
     created_at timestamp,

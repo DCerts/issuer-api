@@ -54,10 +54,17 @@ class NotImplementedError extends Error {
     }
 }
 
+class InternalServerError extends Error {
+    constructor(path: string, code?: ErrorCode | string, message?: string) {
+        super(500, path, code, message);
+    }
+}
+
 export {
     Error,
     UnauthorizedError,
     BadRequestError,
     NotFoundError,
-    NotImplementedError
+    NotImplementedError,
+    InternalServerError
 };

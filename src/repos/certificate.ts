@@ -14,6 +14,7 @@ class CertificateRepository<T> extends Repository<Certificate> {
         if (!result) return null;
         return {
             regNo: result['reg_no'],
+            group: result['group_id'],
             onChainId: result['on_chain_id'],
             batchRegNo: result['batch_reg_no'],
             conferredOn: result['conferred_on'],
@@ -52,6 +53,13 @@ class CertificateRepository<T> extends Repository<Certificate> {
                 .build()
         );
         this.addQuery(
+            'findByGroupId',
+            SimpleSQLBuilder.new()
+                .select('certificates')
+                .by('group-id')
+                .build()
+        );
+        this.addQuery(
             'create',
             SimpleSQLBuilder.new()
                 .insert('certificates')
@@ -76,7 +84,13 @@ class CertificateRepository<T> extends Repository<Certificate> {
 
     async findByRegNo(regNo: string) {
         const query = this.getQuery('findByRegNo');
-        const result = await this.db?.all(query, [regNo]);
+        const result = await this.db?.get(query, [regNo]);
+        return this.convertToEntity(result);
+    }
+
+    async findByGroupId(groupId: number) {
+        const query = this.getQuery('findByGroupId');
+        const result = await this.db?.all(query, [groupId]);
         return result?.map(this.convertToEntity) as Certificate[];
     }
 
@@ -88,8 +102,9 @@ class CertificateRepository<T> extends Repository<Certificate> {
 
     async create(certificate: Certificate) {
         const query = this.getQuery('create');
-        await this.db?.all(query, [
+        await this.db?.run(query, [
             certificate.regNo,
+            certificate.group,
             certificate.batchRegNo,
             certificate.onChainId,
             certificate.conferredOn,

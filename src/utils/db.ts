@@ -121,9 +121,11 @@ class Transaction {
                 await action();
             }
             await db?.commit();
+            return true;
         } catch (err) {
             await db?.rollback();
             logger.error(err);
+            return false;
         }
     }
 
@@ -135,9 +137,11 @@ class Transaction {
                 await db?.run(statement.sql, ...statement.params);
             }
             await db?.commit();
+            return true;
         } catch (err) {
             await db?.rollback();
             logger.error(err);
+            return false;
         }
     }
 }

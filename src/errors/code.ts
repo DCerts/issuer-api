@@ -2,6 +2,7 @@
 enum ErrorCode {
     UNKNOWN = 'unknown',
     INTERNAL_SERVER_ERROR = 'whoops',
+    TRANSACTION_ERROR = 'transaction_error',
     UNAUTHORIZED = 'unauthorized',
     NONCE_NOT_MATCHED = 'nonce_not_matched',
     SIGNATURE_INVALID = 'signature_invalid',

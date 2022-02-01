@@ -1,3 +1,3 @@
 select *
 from certificates
-where on_chain_id = ?;
+where group_id = ?;

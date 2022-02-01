@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from '../errors/http';
+import { BadRequestError, InternalServerError, NotFoundError } from '../errors/http';
 import { Group } from '../models/group';
 import GroupRepository from '../repos/group';
 import AccountRepository from '../repos/account';
@@ -37,7 +37,7 @@ const create = async (group: Group, accountId: string) => {
             throw new NotFoundError(EMPTY, ErrorCode.ACCOUNT_NOT_FOUND);
         }
     }
-    await Transaction.for(async () => {
+    const commited = await Transaction.for(async () => {
         await GroupRepository.create(group);
         const members = group.members || [];
         await GroupRepository.addMembers(group.id, ...members);
@@ -47,6 +47,9 @@ const create = async (group: Group, accountId: string) => {
             CONFIRMED
         );
     });
+    if (!commited) {
+        throw new InternalServerError(EMPTY, ErrorCode.TRANSACTION_ERROR);
+    }
 };
 
 const confirm = async (groupId: number, confirmerId: string, confirmed: boolean) => {

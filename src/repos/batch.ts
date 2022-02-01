@@ -31,6 +31,13 @@ class BatchRepository extends Repository<Batch> {
                 .build()
         );
         this.addQuery(
+            'findByGroupId',
+            SimpleSQLBuilder.new()
+                .select('batches')
+                .by('group-id')
+                .build()
+        );
+        this.addQuery(
             'findByBatchRegNoAndIssued',
             SimpleSQLBuilder.new()
                 .select('batches')
@@ -90,6 +97,12 @@ class BatchRepository extends Repository<Batch> {
         const query = this.getQuery('findByBatchRegNo');
         const result = await this.db?.get(query, [regNo]);
         return this.convertToEntity(result);
+    }
+
+    async findByGroupId(groupId: number) {
+        const query = this.getQuery('findByGroupId');
+        const result = await this.db?.all(query, [groupId]);
+        return result?.map((r: any) => this.convertToEntity(r)) as Batch[];
     }
 
     async findByBatchRegNoAndIssued(regNo: string) {

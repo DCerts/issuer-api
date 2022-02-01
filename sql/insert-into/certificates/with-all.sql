@@ -1,5 +1,6 @@
 insert into certificates (
     reg_no,
+    group_id,
     batch_reg_no,
     on_chain_id,
     conferred_on,
@@ -12,6 +13,7 @@ insert into certificates (
     created_in,
     created_at
 ) values (
+    ?,
     ?,
     ?,
     ?,

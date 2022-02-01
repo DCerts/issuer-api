@@ -1,4 +1,4 @@
-import { BadRequestError, NotFoundError } from '../errors/http';
+import { BadRequestError, InternalServerError, NotFoundError } from '../errors/http';
 import { Batch } from '../models/batch';
 import BatchRepository from '../repos/batch';
 import CertificateRepository from '../repos/certificate';
@@ -16,6 +16,12 @@ const findByBatchRegNo = async (regNo: string) => {
     return batch;
 };
 
+const findByGroupId = async (groupId: number) => {
+    const batches = await BatchRepository.findByGroupId(groupId);
+    if (!batches) throw new NotFoundError(EMPTY, ErrorCode.BATCH_NOT_FOUND);
+    return batches;
+};
+
 const create = async (batch: Batch, accountId: string) => {
     const existed = await BatchRepository.findByBatchRegNo(batch.regNo);
     if (existed) {
@@ -24,7 +30,7 @@ const create = async (batch: Batch, accountId: string) => {
     if (batch.certificates.length) {
         throw new BadRequestError(EMPTY, ErrorCode.CERTIFICATE_MISSING);
     }
-    await Transaction.for(async () => {
+    const commited = await Transaction.for(async () => {
         await BatchRepository.create(batch);
         for (const certificate of batch.certificates) {
             certificate.batchRegNo = batch.regNo;
@@ -36,6 +42,9 @@ const create = async (batch: Batch, accountId: string) => {
             CONFIRMED
         );
     });
+    if (!commited) {
+        throw new InternalServerError(EMPTY, ErrorCode.TRANSACTION_ERROR);
+    }
 };
 
 const confirm = async (batchRegNo: string, confirmerId: string, confirmed: boolean) => {
@@ -54,6 +63,7 @@ const confirm = async (batchRegNo: string, confirmerId: string, confirmed: boole
 
 export default {
     findByBatchRegNo,
+    findByGroupId,
     create,
     confirm
 };
