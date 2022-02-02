@@ -97,6 +97,40 @@ class GroupRepository extends Repository<Group> {
                 .by('id')
                 .build()
         );
+        this.addQuery(
+            'deleteGroup',
+            SimpleSQLBuilder.new()
+                .delete('groups')
+                .by('id')
+                .build()
+        );
+        this.addQuery(
+            'deleteGroupConfirmers',
+            SimpleSQLBuilder.new()
+                .delete('group-confirmers')
+                .by('group-id')
+                .build()
+        );
+        this.addQuery(
+            'deleteGroupMembers',
+            SimpleSQLBuilder.new()
+                .delete('group-members')
+                .by('group-id')
+                .build()
+        );
+        this.addQuery(
+            'existsGroupConfirmation',
+            SimpleSQLBuilder.new()
+                .select('group-confirmers')
+                .by('group-id', 'confirmer-id')
+                .build()
+        );
+    }
+
+    async existsGroupConfirmation(groupId: number, accountId: string) {
+        const query = this.getQuery('existsGroupConfirmation');
+        const result = await this.db?.get(query, [groupId, accountId]);
+        return result['existed'] as boolean;
     }
 
     async findByGroupId(groupId: number) {
@@ -158,6 +192,21 @@ class GroupRepository extends Repository<Group> {
     async updateAvailability(groupId: number, available: number) {
         const query = this.getQuery('updateAvailability');
         await this.db?.run(query, [available, groupId]);
+    }
+
+    async deleteGroup(groupId: number) {
+        const query = this.getQuery('deleteGroup');
+        await this.db?.run(query, [groupId]);
+    }
+
+    async deleteGroupConfirmers(groupId: number) {
+        const query = this.getQuery('deleteGroupConfirmers');
+        await this.db?.run(query, [groupId]);
+    }
+
+    async deleteGroupMembers(groupId: number) {
+        const query = this.getQuery('deleteGroupMembers');
+        await this.db?.run(query, [groupId]);
     }
 }
 

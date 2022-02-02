@@ -251,6 +251,12 @@ class SimpleSQLBuilder {
         return this;
     }
 
+    delete(table: string): SimpleSQLBuilder {
+        this.table = table;
+        this.action = SimpleSQLAction.DELETE;
+        return this;
+    }
+
     // For SET clause
     with(...columns: string[]): SimpleSQLBuilder {
         this.columns.set(SimpleSQLKeyword.WITH, columns);

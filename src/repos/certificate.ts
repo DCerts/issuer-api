@@ -95,7 +95,7 @@ class CertificateRepository<T> extends Repository<Certificate> {
     }
 
     async findByBatchRegNo(batchRegNo: string) {
-        const query = this.getQuery('findByBatchId');
+        const query = this.getQuery('findByBatchRegNo');
         const result = await this.db?.all(query, [batchRegNo]);
         return result?.map(this.convertToEntity) as Certificate[];
     }

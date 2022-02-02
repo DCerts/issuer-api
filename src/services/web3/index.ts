@@ -7,7 +7,8 @@ import Web3BatchService from './batch';
 import Web3CertificateService from './certificate';
 import {
     EVENT_WALLET_ACTIVATED,
-    EVENT_GROUP_ADDED, EVENT_GROUP_CONFIRMED, EVENT_GROUP_PENDING,
+    EVENT_GROUP_PENDING, EVENT_GROUP_ADDED, EVENT_GROUP_REMOVED,
+    EVENT_GROUP_CONFIRMED, EVENT_GROUP_REJECTED,
     EVENT_BATCH_ADDED, EVENT_BATCH_CONFIRMED, EVENT_BATCH_PENDING,
     EVENT_CERT_PENDING
 } from '../../commons/contract';
@@ -32,11 +33,17 @@ const processGroupEvents = async (e: EventData) => {
     if (e.event === EVENT_GROUP_CONFIRMED) {
         return Web3GroupService.processGroupConfirmed(e);
     }
+    if (e.event === EVENT_GROUP_REJECTED) {
+        return Web3GroupService.processGroupRejected(e);
+    }
     if (e.event === EVENT_GROUP_PENDING) {
         return Web3GroupService.processGroupPending(e);
     }
     if (e.event === EVENT_GROUP_ADDED) {
         return Web3GroupService.processGroupAdded(e);
+    }
+    if (e.event === EVENT_GROUP_REMOVED) {
+        return Web3GroupService.processGroupRemoved(e);
     }
 };
 
