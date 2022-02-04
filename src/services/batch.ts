@@ -27,7 +27,7 @@ const create = async (batch: Batch, accountId: string) => {
     if (existed) {
         throw new BadRequestError(EMPTY, ErrorCode.EXISTED);
     }
-    if (batch.certificates.length) {
+    if (!batch.certificates.length) {
         throw new BadRequestError(EMPTY, ErrorCode.CERTIFICATE_MISSING);
     }
     const commited = await Transaction.for(async () => {
