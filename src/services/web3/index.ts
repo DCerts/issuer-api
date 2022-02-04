@@ -1,5 +1,5 @@
 import { EventData } from 'web3-eth-contract';
-import { getContract } from '../../utils/eth';
+import EthUtils from '../../utils/eth';
 import logger from '../../utils/logger';
 import Web3AccountService from './account';
 import Web3GroupService from './group';
@@ -15,7 +15,7 @@ import {
 
 
 const getEventsByName = async (eventName: string) => {
-    const contract = await getContract();
+    const contract = await EthUtils.getContract();
     const events = await contract.getPastEvents(eventName, {
         fromBlock: 0,
         toBlock: 'latest'
@@ -65,12 +65,18 @@ const processCertificateEvents = async (e: EventData) => {
     }
 };
 
+let connected = false;
+
 const listenEvents = async () => {
-    const contract = await getContract();
+    const contract = await EthUtils.getContract();
     contract.events.allEvents({
         fromBlock: 0
     }, (err: any, e: EventData) => {
-        if (err) logger.error(err);
+        if (err) {
+            logger.error(err);
+            EthUtils.reconnect();
+            listenEvents();
+        }
         else if (e) {
             logger.info(`${e.event} ${JSON.stringify(e.returnValues, null, 2)}`);
 

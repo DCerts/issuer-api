@@ -2,7 +2,7 @@ import { EMPTY } from '../commons/str';
 import { ErrorCode } from '../errors/code';
 import { NotFoundError, UnauthorizedError } from '../errors/http';
 import AccountRepository from '../repos/account';
-import { isSignatureValid } from '../utils/eth';
+import EthUtils from '../utils/eth';
 import { JwtUtils } from '../utils/jwt';
 import logger from '../utils/logger';
 
@@ -26,7 +26,7 @@ const getNonce = async (publicAddress: string) => {
 
 const validateSignature = async (publicAddress: string, signature: string) => {
     const nonce = (await AccountRepository.findById(publicAddress))?.nonce || EMPTY;
-    if (!isSignatureValid(nonce, publicAddress, signature)) {
+    if (!EthUtils.isSignatureValid(nonce, publicAddress, signature)) {
         throw new UnauthorizedError(EMPTY, ErrorCode.UNAUTHORIZED);
     }
     return JwtUtils.generateToken({

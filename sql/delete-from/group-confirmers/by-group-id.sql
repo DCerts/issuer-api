@@ -1,2 +1,2 @@
-delete from group_members
+delete from group_confirmers
 where group_id = ?;

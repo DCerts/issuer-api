@@ -17,7 +17,11 @@ interface ContractJSON {
     };
 }
 
-const web3 = new Web3(`${process.env.WEB3_PROVIDER}`);
+const getWeb3 = () => {
+    return new Web3(`${process.env.WEB3_PROVIDER}`);
+};
+
+let web3 = getWeb3();
 
 /**
  * Returns instance of the contract MultiSigWallet.
@@ -34,6 +38,10 @@ const getContract = async () => {
     const address = contractJSON.networks[netId].address;
     contract = new web3.eth.Contract(abi, address);
     return contract;
+};
+
+const reconnect = () => {
+    web3 = getWeb3();
 };
 
 /**
@@ -53,8 +61,8 @@ const isSignatureValid = (
     return address.toLowerCase() === publicAddress.toLowerCase();
 };
 
-export default web3;
-export {
+export default {
+    reconnect,
     getContract,
     isSignatureValid
 };
