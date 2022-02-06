@@ -1,4 +1,5 @@
 import AccountRepository from '../repos/account';
+import GroupRepository from '../repos/group';
 import { Account } from '../models/account';
 import { BadRequestError, NotFoundError } from '../errors/http';
 import { EMPTY } from '../commons/str';
@@ -21,7 +22,9 @@ const findById = async (id: string) => {
     if (!account) {
         throw new NotFoundError(EMPTY, ErrorCode.NOT_FOUND);
     }
+    const groups = await GroupRepository.findGroupsByMemberId(id);
     account.nonce = undefined;
+    account.groups = groups.map(group => group.id);
     return account;
 };
 

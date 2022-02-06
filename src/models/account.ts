@@ -4,7 +4,8 @@ interface Account {
     name?: string,
     birthday?: string,
     email?: string,
-    nonce?: string
+    nonce?: string,
+    groups?: number[]
 }
 
 enum Role {
