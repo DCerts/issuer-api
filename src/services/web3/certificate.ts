@@ -4,11 +4,7 @@ import CertificateRepository from '../../repos/certificate';
 
 
 const processCertificateAdded = async (event: EventData) => {
-    // Do nothing!
-};
-
-const processCertificatePending = async (event: EventData) => {
-    const onChainId = Number.parseInt(event.returnValues.certificateId as string);
+    const onChainId = Number.parseInt(event.returnValues.certId as string);
     const regNo = event.returnValues.regNo as string;
     await Transaction.for(async () => {
         await CertificateRepository.updateOnChainIdByRegNo(
@@ -16,6 +12,10 @@ const processCertificatePending = async (event: EventData) => {
             onChainId
         );
     });
+};
+
+const processCertificatePending = async (event: EventData) => {
+    // Do nothing!
 };
 
 const processCertificateConfirmed = async (event: EventData) => {

@@ -10,7 +10,7 @@ import {
     EVENT_GROUP_PENDING, EVENT_GROUP_ADDED, EVENT_GROUP_REMOVED,
     EVENT_GROUP_CONFIRMED, EVENT_GROUP_REJECTED,
     EVENT_BATCH_ADDED, EVENT_BATCH_CONFIRMED, EVENT_BATCH_PENDING,
-    EVENT_CERT_PENDING
+    EVENT_CERT_ADDED, EVENT_CERT_CONFIRMED, EVENT_CERT_PENDING
 } from '../../commons/contract';
 
 
@@ -60,8 +60,14 @@ const processBatchEvents = async (e: EventData) => {
 };
 
 const processCertificateEvents = async (e: EventData) => {
+    if (e.event === EVENT_CERT_CONFIRMED) {
+        return Web3CertificateService.processCertificateConfirmed(e);
+    }
     if (e.event === EVENT_CERT_PENDING) {
         return Web3CertificateService.processCertificatePending(e);
+    }
+    if (e.event === EVENT_CERT_ADDED) {
+        return Web3CertificateService.processCertificateAdded(e);
     }
 };
 

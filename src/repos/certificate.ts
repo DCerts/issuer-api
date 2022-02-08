@@ -120,7 +120,7 @@ class CertificateRepository<T> extends Repository<Certificate> {
 
     async updateOnChainIdByRegNo(regNo: string, onChainId: number) {
         const query = this.getQuery('updateOnChainIdByRegNo');
-        await this.db?.all(query, [onChainId, regNo]);
+        await this.db?.run(query, [onChainId, regNo]);
     }
 }
 
