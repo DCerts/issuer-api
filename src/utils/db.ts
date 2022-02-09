@@ -105,6 +105,8 @@ interface Statement {
     params: any[]
 }
 
+type Action = (instance?: Sqlite) => any;
+
 /**
  * Utilities for database transaction.
  */
@@ -113,12 +115,12 @@ class Transaction {
      * Start a transaction for specific actions.
      * @param actions the asynchronous actions
      */
-    static async for(...actions: Function[]) {
+    static async for(...actions: Action[]) {
         const db = await Database.getNewInstance();
         try {
             await db?.begin();
             for (const action of actions) {
-                await action(db);
+                await action(undefined);
             }
             await db?.commit();
             return true;
