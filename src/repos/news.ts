@@ -1,6 +1,7 @@
 import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { NewsDatum, NewsType } from '../models/news';
+import { Sqlite } from '../utils/sqlite';
 
 
 class NewsRepository<T> extends Repository<NewsDatum<T>> {
@@ -34,15 +35,15 @@ class NewsRepository<T> extends Repository<NewsDatum<T>> {
         );
     }
 
-    async findGroupCreatedNewsByAccountId(accountId: string) {
+    async findGroupCreatedNewsByAccountId(accountId: string, db?: Sqlite) {
         const query = this.getQuery('findGroupCreatedNewsByAccountId');
-        const result = await this.db?.all(query, [accountId]);
+        const result = await (db || this.db)?.all(query, [accountId]);
         return result?.map(this.convertToEntity) as NewsDatum<T>[];
     }
 
-    async findBatchCreatedNewsByAccountId(accountId: string) {
+    async findBatchCreatedNewsByAccountId(accountId: string, db?: Sqlite) {
         const query = this.getQuery('findBatchCreatedNewsByAccountId');
-        const result = await this.db?.all(query, [accountId]);
+        const result = await (db || this.db)?.all(query, [accountId, accountId]);
         return result?.map(this.convertToEntity) as NewsDatum<T>[];
     }
 }

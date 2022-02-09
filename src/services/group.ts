@@ -37,14 +37,15 @@ const create = async (group: Group, accountId: string) => {
             throw new NotFoundError(EMPTY, ErrorCode.ACCOUNT_NOT_FOUND);
         }
     }
-    const commited = await Transaction.for(async () => {
-        await GroupRepository.create(group);
+    const commited = await Transaction.for(async (instance: any) => {
+        await GroupRepository.create(group, instance);
         const members = group.members || [];
-        await GroupRepository.addMembers(group.id, ...members);
+        await GroupRepository.addMembers(group.id, members, instance);
         await GroupRepository.confirm(
             group.id,
             accountId,
-            CONFIRMED
+            CONFIRMED,
+            instance
         );
     });
     if (!commited) {

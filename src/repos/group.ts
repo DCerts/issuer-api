@@ -2,6 +2,7 @@ import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Group } from '../models/group';
 import { AVAILABLE } from '../commons/setting';
+import { Sqlite } from '../utils/sqlite';
 
 
 class GroupRepository extends Repository<Group> {
@@ -127,86 +128,86 @@ class GroupRepository extends Repository<Group> {
         );
     }
 
-    async existsGroupConfirmation(groupId: number, accountId: string) {
+    async existsGroupConfirmation(groupId: number, accountId: string, db?: Sqlite) {
         const query = this.getQuery('existsGroupConfirmation');
-        const result = await this.db?.get(query, [groupId, accountId]);
+        const result = await (db || this.db)?.get(query, [groupId, accountId]);
         return result['existed'] as boolean;
     }
 
-    async findByGroupId(groupId: number) {
+    async findByGroupId(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findByGroupId');
-        const result = await this.db?.get(query, [groupId]);
+        const result = await (db || this.db)?.get(query, [groupId]);
         return this.convertToEntity(result);
     }
 
-    async findByGroupIdAndAvailable(groupId: number) {
+    async findByGroupIdAndAvailable(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findByGroupIdAndAvailable');
-        const result = await this.db?.get(query, [groupId]);
+        const result = await (db || this.db)?.get(query, [groupId]);
         return this.convertToEntity(result);
     }
 
-    async findConfirmersByGroupId(groupId: number) {
+    async findConfirmersByGroupId(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findConfirmersByGroupId');
-        const result = await this.db?.all(query, [groupId]);
+        const result = await (db || this.db)?.all(query, [groupId]);
         return result?.map((r: any) => r['confirmer_id'] as string) as string[];
     }
 
-    async findMembersByGroupId(groupId: number) {
+    async findMembersByGroupId(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findMembersByGroupId');
-        const result = await this.db?.all(query, [groupId]);
+        const result = await (db || this.db)?.all(query, [groupId]);
         return result?.map((r: any) => r['member_id'] as string) as string[];
     }
 
-    async findGroupsByMemberId(memberId: string) {
+    async findGroupsByMemberId(memberId: string, db?: Sqlite) {
         const query = this.getQuery('findGroupsByMemberId');
-        const result = await this.db?.all(query, [memberId]);
+        const result = await (db || this.db)?.all(query, [memberId]);
         return result?.map(this.convertToEntity) as Group[];
     }
 
-    async create(group: Group) {
+    async create(group: Group, db?: Sqlite) {
         const query = this.getQuery('create');
-        await this.db?.run(query, [group.id, group.name, group.threshold, group.creator]);
+        await (db || this.db)?.run(query, [group.id, group.name, group.threshold, group.creator]);
     }
 
-    async confirm(groupId: number, confirmerId: string, confirmed: number) {
+    async confirm(groupId: number, confirmerId: string, confirmed: number, db?: Sqlite) {
         const query = this.getQuery('confirm');
-        await this.db?.run(query, [groupId, confirmerId, confirmed]);
+        await (db || this.db)?.run(query, [groupId, confirmerId, confirmed]);
     }
 
-    async updateConfirmation(groupId: number, confirmerId: string, confirmation: number) {
+    async updateConfirmation(groupId: number, confirmerId: string, confirmation: number, db?: Sqlite) {
         const query = this.getQuery('updateConfirmation');
-        await this.db?.run(query, [confirmation, groupId, confirmerId]);
+        await (db || this.db)?.run(query, [confirmation, groupId, confirmerId]);
     }
 
-    async addMember(groupId: number, memberId: string) {
+    async addMember(groupId: number, memberId: string, db?: Sqlite) {
         const query = this.getQuery('addMember');
-        await this.db?.run(query, [groupId, memberId]);
+        await (db || this.db)?.run(query, [groupId, memberId]);
     }
 
-    async addMembers(groupId: number, ...members: string[]) {
+    async addMembers(groupId: number, members: string[], db?: Sqlite) {
         for (const member of members) {
             this.addMember(groupId, member); // TODO: Insert multiple members at once
         }
     }
 
-    async updateAvailability(groupId: number, available: number) {
+    async updateAvailability(groupId: number, available: number, db?: Sqlite) {
         const query = this.getQuery('updateAvailability');
-        await this.db?.run(query, [available, groupId]);
+        await (db || this.db)?.run(query, [available, groupId]);
     }
 
-    async deleteGroup(groupId: number) {
+    async deleteGroup(groupId: number, db?: Sqlite) {
         const query = this.getQuery('deleteGroup');
-        await this.db?.run(query, [groupId]);
+        await (db || this.db)?.run(query, [groupId]);
     }
 
-    async deleteGroupConfirmers(groupId: number) {
+    async deleteGroupConfirmers(groupId: number, db?: Sqlite) {
         const query = this.getQuery('deleteGroupConfirmers');
-        await this.db?.run(query, [groupId]);
+        await (db || this.db)?.run(query, [groupId]);
     }
 
-    async deleteGroupMembers(groupId: number) {
+    async deleteGroupMembers(groupId: number, db?: Sqlite) {
         const query = this.getQuery('deleteGroupMembers');
-        await this.db?.run(query, [groupId]);
+        await (db || this.db)?.run(query, [groupId]);
     }
 }
 

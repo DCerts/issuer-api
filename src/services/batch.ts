@@ -30,16 +30,17 @@ const create = async (batch: Batch, accountId: string) => {
     if (!batch.certificates.length) {
         throw new BadRequestError(EMPTY, ErrorCode.CERTIFICATE_MISSING);
     }
-    const commited = await Transaction.for(async () => {
-        await BatchRepository.create(batch);
+    const commited = await Transaction.for(async (instance: any) => {
+        await BatchRepository.create(batch, instance);
         for (const certificate of batch.certificates) {
             certificate.batchRegNo = batch.regNo;
-            await CertificateRepository.create(certificate);
+            await CertificateRepository.create(certificate, instance);
         }
         await BatchRepository.confirm(
             batch.regNo,
             accountId,
-            CONFIRMED
+            CONFIRMED,
+            instance
         );
     });
     if (!commited) {

@@ -6,18 +6,19 @@ import { NOT_PENDING, ISSUED } from '../../commons/setting';
 
 const processBatchAdded = async (event: EventData) => {
     const regNo = event.returnValues.regNo as string;
-    await Transaction.for(async () => {
-        await BatchRepository.updateIssuance(regNo, ISSUED);
+    await Transaction.for(async (instance: any) => {
+        await BatchRepository.updateIssuance(regNo, ISSUED, instance);
     });
 };
 
 const processBatchPending = async (event: EventData) => {
     const onChainId = Number.parseInt(event.returnValues.batchId as string);
     const regNo = event.returnValues.regNo as string;
-    await Transaction.for(async () => {
+    await Transaction.for(async (instance: any) => {
         await BatchRepository.updateOnChainId(
             regNo,
-            onChainId
+            onChainId,
+            instance
         );
     });
 };
@@ -25,11 +26,12 @@ const processBatchPending = async (event: EventData) => {
 const processBatchConfirmed = async (event: EventData) => {
     const confirmerId = event.returnValues.confirmer as string;
     const regNo = event.returnValues.regNo as string;
-    await Transaction.for(async () => {
+    await Transaction.for(async (instance: any) => {
         await BatchRepository.updateConfirmation(
             regNo,
             confirmerId,
-            NOT_PENDING
+            NOT_PENDING,
+            instance
         );
     });
 };

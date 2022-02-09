@@ -118,7 +118,7 @@ class Transaction {
         try {
             await db?.begin();
             for (const action of actions) {
-                await action();
+                await action(db);
             }
             await db?.commit();
             return true;

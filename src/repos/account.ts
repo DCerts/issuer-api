@@ -1,6 +1,7 @@
 import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Account, Role } from '../models/account';
+import { Sqlite } from '../utils/sqlite';
 
 
 class AccountRepository extends Repository<Account> {
@@ -63,42 +64,42 @@ class AccountRepository extends Repository<Account> {
         );
     }
 
-    async findAll() {
+    async findAll(db?: Sqlite) {
         const query = this.getQuery('findAll');
-        const result = await this.db?.all(query);
+        const result = await (db || this.db)?.all(query);
         return result?.map(this.convertToEntity) as Account[];
     }
 
-    async findById(id: string) {
+    async findById(id: string, db?: Sqlite) {
         const query = this.getQuery('findById');
-        const result = await this.db?.get(query, [id]);
+        const result = await (db || this.db)?.get(query, [id]);
         return this.convertToEntity(result);
     }
 
-    async create(account: Account) {
+    async create(account: Account, db?: Sqlite) {
         const query = this.getQuery('create');
-        await this.db?.run(query, [
+        await (db || this.db)?.run(query, [
             account.id, account.name, account.birthday, account.email
         ]);
     }
 
-    async createAdmin(account: Account) {
+    async createAdmin(account: Account, db?: Sqlite) {
         const query = this.getQuery('createAdmin');
-        await this.db?.run(query, [
+        await (db || this.db)?.run(query, [
             account.id, account.name, account.birthday, account.email, Role.SCHOOL
         ]);
     }
 
-    async updateById(id: string, account: Account) {
+    async updateById(id: string, account: Account, db?: Sqlite) {
         const query = this.getQuery('updateById');
-        await this.db?.run(query, [
+        await (db || this.db)?.run(query, [
             account.name, account.birthday, account.email, id
         ]);
     }
 
-    async updateNonceById(id: string, nonce: string) {
+    async updateNonceById(id: string, nonce: string, db?: Sqlite) {
         const query = this.getQuery('updateNonceById');
-        await this.db?.run(query, [nonce, id]);
+        await (db || this.db)?.run(query, [nonce, id]);
     }
 }
 

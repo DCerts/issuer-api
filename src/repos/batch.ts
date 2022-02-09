@@ -2,6 +2,7 @@ import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Batch } from '../models/batch';
 import { ISSUED } from '../commons/setting';
+import { Sqlite } from '../utils/sqlite';
 
 
 class BatchRepository extends Repository<Batch> {
@@ -93,53 +94,53 @@ class BatchRepository extends Repository<Batch> {
         );
     }
 
-    async findByBatchRegNo(regNo: string) {
+    async findByBatchRegNo(regNo: string, db?: Sqlite) {
         const query = this.getQuery('findByBatchRegNo');
-        const result = await this.db?.get(query, [regNo]);
+        const result = await (db || this.db)?.get(query, [regNo]);
         return this.convertToEntity(result);
     }
 
-    async findByGroupId(groupId: number) {
+    async findByGroupId(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findByGroupId');
-        const result = await this.db?.all(query, [groupId]);
+        const result = await (db || this.db)?.all(query, [groupId]);
         return result?.map((r: any) => this.convertToEntity(r)) as Batch[];
     }
 
-    async findByBatchRegNoAndIssued(regNo: string) {
+    async findByBatchRegNoAndIssued(regNo: string, db?: Sqlite) {
         const query = this.getQuery('findByBatchRegNoAndIssued');
-        const result = await this.db?.get(query, [regNo]);
+        const result = await (db || this.db)?.get(query, [regNo]);
         return this.convertToEntity(result);
     }
 
-    async findConfirmersByBatchRegNo(regNo: string) {
+    async findConfirmersByBatchRegNo(regNo: string, db?: Sqlite) {
         const query = this.getQuery('findConfirmersByBatchRegNo');
-        const result = await this.db?.all(query, [regNo]);
+        const result = await (db || this.db)?.all(query, [regNo]);
         return result?.map((r: any) => r['confirmer_id'] as string) as string[];
     }
 
-    async create(batch: Batch) {
+    async create(batch: Batch, db?: Sqlite) {
         const query = this.getQuery('create');
-        await this.db?.run(query, [batch.regNo, batch.group, batch.creator]);
+        await (db || this.db)?.run(query, [batch.regNo, batch.group, batch.creator]);
     }
 
-    async confirm(regNo: string, confirmerId: string, confirmed: number) {
+    async confirm(regNo: string, confirmerId: string, confirmed: number, db?: Sqlite) {
         const query = this.getQuery('confirm');
-        await this.db?.run(query, [regNo, confirmerId, confirmed]);
+        await (db || this.db)?.run(query, [regNo, confirmerId, confirmed]);
     }
 
-    async updateConfirmation(regNo: string, confirmerId: string, confirmation: number) {
+    async updateConfirmation(regNo: string, confirmerId: string, confirmation: number, db?: Sqlite) {
         const query = this.getQuery('updateConfirmation');
-        await this.db?.run(query, [confirmation, regNo, confirmerId]);
+        await (db || this.db)?.run(query, [confirmation, regNo, confirmerId]);
     }
 
-    async updateIssuance(regNo: string, issued: number) {
+    async updateIssuance(regNo: string, issued: number, db?: Sqlite) {
         const query = this.getQuery('updateIssuanceByBatchRegNo');
-        await this.db?.run(query, [issued, regNo]);
+        await (db || this.db)?.run(query, [issued, regNo]);
     }
 
-    async updateOnChainId(regNo: string, onChainId: number) {
+    async updateOnChainId(regNo: string, onChainId: number, db?: Sqlite) {
         const query = this.getQuery('updateOnChainIdByBatchRegNo');
-        await this.db?.run(query, [onChainId, regNo]);
+        await (db || this.db)?.run(query, [onChainId, regNo]);
     }
 }
 

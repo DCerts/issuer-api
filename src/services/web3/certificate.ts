@@ -6,10 +6,11 @@ import CertificateRepository from '../../repos/certificate';
 const processCertificateAdded = async (event: EventData) => {
     const onChainId = Number.parseInt(event.returnValues.certId as string);
     const regNo = event.returnValues.regNo as string;
-    await Transaction.for(async () => {
+    await Transaction.for(async (instance: any) => {
         await CertificateRepository.updateOnChainIdByRegNo(
             regNo,
-            onChainId
+            onChainId,
+            instance
         );
     });
 };

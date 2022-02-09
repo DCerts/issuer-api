@@ -5,11 +5,11 @@ import AccountRepository from '../../repos/account';
 
 const processWalletActivated = async (event: EventData) => {
     const members = event.returnValues.members as string[];
-    await Transaction.for(async () => {
+    await Transaction.for(async (instance: any) => {
         for (const member of members) {
             await AccountRepository.createAdmin({
                 id: member
-            });
+            }, instance);
         }
     });
 };

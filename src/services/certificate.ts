@@ -35,8 +35,8 @@ const create = async (certificate: Certificate) => {
     if (existed) {
         throw new BadRequestError(EMPTY, ErrorCode.EXISTED);
     }
-    const commited = await Transaction.for(async () => {
-        await CertificateRepository.create(certificate);
+    const commited = await Transaction.for(async (instance: any) => {
+        await CertificateRepository.create(certificate, instance);
     });
     if (!commited) {
         throw new InternalServerError(EMPTY, ErrorCode.TRANSACTION_ERROR);

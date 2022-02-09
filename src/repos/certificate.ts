@@ -2,6 +2,7 @@ import Repository from './base';
 import { SQL, SimpleSQLBuilder } from '../utils/db';
 import { Certificate } from '../models/certificate';
 import { ISSUED } from '../commons/setting';
+import { Sqlite } from '../utils/sqlite';
 
 
 class CertificateRepository<T> extends Repository<Certificate> {
@@ -76,33 +77,33 @@ class CertificateRepository<T> extends Repository<Certificate> {
         );
     }
 
-    async findByOnChainId(onChainId: number) {
+    async findByOnChainId(onChainId: number, db?: Sqlite) {
         const query = this.getQuery('findByOnChainId');
-        const result = await this.db?.get(query, [onChainId]);
+        const result = await (db || this.db)?.get(query, [onChainId]);
         return this.convertToEntity(result);
     }
 
-    async findByRegNo(regNo: string) {
+    async findByRegNo(regNo: string, db?: Sqlite) {
         const query = this.getQuery('findByRegNo');
-        const result = await this.db?.get(query, [regNo]);
+        const result = await (db || this.db)?.get(query, [regNo]);
         return this.convertToEntity(result);
     }
 
-    async findByGroupId(groupId: number) {
+    async findByGroupId(groupId: number, db?: Sqlite) {
         const query = this.getQuery('findByGroupId');
-        const result = await this.db?.all(query, [groupId]);
+        const result = await (db || this.db)?.all(query, [groupId]);
         return result?.map(this.convertToEntity) as Certificate[];
     }
 
-    async findByBatchRegNo(batchRegNo: string) {
+    async findByBatchRegNo(batchRegNo: string, db?: Sqlite) {
         const query = this.getQuery('findByBatchRegNo');
-        const result = await this.db?.all(query, [batchRegNo]);
+        const result = await (db || this.db)?.all(query, [batchRegNo]);
         return result?.map(this.convertToEntity) as Certificate[];
     }
 
-    async create(certificate: Certificate) {
+    async create(certificate: Certificate, db?: Sqlite) {
         const query = this.getQuery('create');
-        await this.db?.run(query, [
+        await (db || this.db)?.run(query, [
             certificate.regNo,
             certificate.group,
             certificate.batchRegNo,
@@ -118,9 +119,9 @@ class CertificateRepository<T> extends Repository<Certificate> {
         ]);
     }
 
-    async updateOnChainIdByRegNo(regNo: string, onChainId: number) {
+    async updateOnChainIdByRegNo(regNo: string, onChainId: number, db?: Sqlite) {
         const query = this.getQuery('updateOnChainIdByRegNo');
-        await this.db?.run(query, [onChainId, regNo]);
+        await (db || this.db)?.run(query, [onChainId, regNo]);
     }
 }
 
