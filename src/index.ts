@@ -32,7 +32,7 @@ app.use('/groups', JwtUtils.jwtFilter, group);
 app.use('/batches', JwtUtils.jwtFilter, batch);
 app.use('/certificates', JwtUtils.jwtFilter, certificate);
 app.use('/news', JwtUtils.jwtFilter, news);
-app.use('/test', test);
+// app.use('/test', test);
 app.use(ErrorHandlers.pathNotFoundHandler);
 app.use(ErrorHandlers.httpErrorHandler);
 
