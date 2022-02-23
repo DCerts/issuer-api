@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { DatabaseUtils } from './utils/db';
+import { Web3Utils } from './utils/web3';
 import auth from './controllers/auth';
 import account from './controllers/account';
 import group from './controllers/group';
@@ -20,6 +21,10 @@ dotenv.config();
 (async () => {
     await DatabaseUtils.connect();
     await DatabaseUtils.createAllTables();
+})();
+
+(async () => {
+    await Web3Utils.connect();
 })();
 
 const app: Express = express();
