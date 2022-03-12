@@ -99,8 +99,7 @@ const listenEvents = async () => {
     });
 };
 
-listenEvents();
-
 export default {
+    listenEvents,
     getEventsByName
 };
