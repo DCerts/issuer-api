@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 8080:3000
+    networks:
+      default:
+        aliases:
+          - issuer-api
+    environment:
+      - PORT=3000
+      - JWT_SECRET=Hoang Sa, Truong Sa belong to Vietnam
+      - JWT_VALIDITY=1800s
+      - WEB3_PROVIDER=wss://rinkeby.infura.io/ws/v3/c690146f1ff145f096edbb6f90579fa6
